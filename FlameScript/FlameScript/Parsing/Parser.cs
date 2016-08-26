@@ -132,16 +132,18 @@ namespace FlameScript.Parsing
                         }
                     }
                 }
-                else if (upcomingToken is IdentifierToken && _scopes.Count > 1) //in nested scope
+                else if (upcomingToken is IdentifierToken && _scopes.Count > 1) //in a nested scope
                 {
-                    var name = ReadNextToken<IdentifierToken>();
-                    if (upcomingToken is OperatorToken && ((OperatorToken)upcomingToken).OperatorType == OperatorType.Assignment) //variable assignment
+                    var identifierName = upcomingToken as IdentifierToken;
+                    NextToken(); //Step past the identifier token
+                    var nextToken = PeekNextToken(); //Read the next token
+                    if (nextToken is OperatorToken && ((OperatorToken)nextToken).OperatorType == OperatorType.Assignment) //variable assignment
                     {
                         NextToken(); //skip the "="
-                        _scopes.Peek().AddStatement(new VariableAssignmentNode(name.Content, ExpressionNode.CreateFromTokens(ReadUntilStatementSeparator())));
+                        _scopes.Peek().AddStatement(new VariableAssignmentNode(identifierName.Content, ExpressionNode.CreateFromTokens(ReadUntilStatementSeparator())));
                     }
                     else //lone expression (incl. function calls!)
-                        _scopes.Peek().AddStatement(ExpressionNode.CreateFromTokens(new[] { name }.Concat(ReadUntilStatementSeparator()))); //don't forget the name here!
+                        _scopes.Peek().AddStatement(ExpressionNode.CreateFromTokens(new[] { identifierName }.Concat(ReadUntilStatementSeparator()))); //don't forget the name here!
                 }
                 else if (upcomingToken is CloseBraceToken)
                 {

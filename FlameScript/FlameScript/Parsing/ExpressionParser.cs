@@ -93,7 +93,8 @@ namespace FlameScript.Parsing
                         op = operatorToOperation[((OperatorToken)token).OperatorType];
 
                     //TODO: Do we need to check for assosiativity? Only unary operators and assignments are rtl-assosiativ
-                    while (operators.Count != 0 && operationPrecedence[operators.Peek()] > operationPrecedence[op]) //stack empty or only low precendence operators on stack
+                    ExpressionOperationType currentOperator;
+                    while (operators.Count != 0 && operationPrecedence[currentOperator = operators.Peek()] > operationPrecedence[op]) //stack empty or only low precendence operators on stack
                     {
                         PopOperator();
                     }

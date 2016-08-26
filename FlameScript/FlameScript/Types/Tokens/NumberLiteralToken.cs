@@ -2,7 +2,7 @@
 
 namespace FlameScript.Types.Tokens
 {
-    public class NumberLiteralToken : Token
+    public class NumberLiteralToken : LiteralToken
     {
         public double Number
         {

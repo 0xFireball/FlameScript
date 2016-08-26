@@ -2,7 +2,7 @@
 {
     public abstract class Token
     {
-        public string Content { get; }
+        public string Content { get; protected set; }
 
         public Token(string content)
         {

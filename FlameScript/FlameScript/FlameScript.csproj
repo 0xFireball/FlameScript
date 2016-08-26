@@ -63,12 +63,14 @@
     <Compile Include="Types\Ast\FunctionCallExpressionNode.cs" />
     <Compile Include="Types\Ast\FunctionDeclarationNode.cs" />
     <Compile Include="Types\Ast\IfStatementNode.cs" />
+    <Compile Include="Types\Ast\LiteralNode.cs" />
     <Compile Include="Types\Ast\LoopStatementNode.cs" />
     <Compile Include="Types\Ast\NumberLiteralNode.cs" />
     <Compile Include="Types\Ast\ParameterDeclarationNode.cs" />
     <Compile Include="Types\Ast\ProgramNode.cs" />
     <Compile Include="Types\Ast\ReturnStatementNode.cs" />
     <Compile Include="Types\Ast\StatementSequenceNode.cs" />
+    <Compile Include="Types\Ast\StringLiteralNode.cs" />
     <Compile Include="Types\Ast\UnaryOperationNode.cs" />
     <Compile Include="Types\Ast\VariableAssignmentNode.cs" />
     <Compile Include="Types\Ast\VariableDeclarationNode.cs" />
@@ -82,6 +84,7 @@
     <Compile Include="Types\Tokens\IdentifierToken.cs" />
     <Compile Include="Types\Tokens\KeywordToken.cs" />
     <Compile Include="Types\Tokens\KeywordType.cs" />
+    <Compile Include="Types\Tokens\LiteralToken.cs" />
     <Compile Include="Types\Tokens\NumberLiteralToken.cs" />
     <Compile Include="Types\Tokens\OpenBraceToken.cs" />
     <Compile Include="Types\Tokens\OperatorToken.cs" />

@@ -15,7 +15,7 @@ namespace FlameScript.Parsing
         private int _readingPosition;
         private Stack<StatementSequenceNode> _scopes;
 
-        private static readonly KeywordType[] typeKeywords = { KeywordType.Number, KeywordType.Void };
+        private static readonly KeywordType[] typeKeywords = { KeywordType.Number, KeywordType.Void, KeywordType.String };
 
         public Parser(Token[] tokens)
         {
@@ -183,9 +183,11 @@ namespace FlameScript.Parsing
 
         private IEnumerable<Token> ReadUntilStatementSeparator()
         {
-            while (!EndOfProgram && !(PeekNextToken() is StatementSeparatorToken))
+            var upcomingToken = PeekNextToken();
+            while (!EndOfProgram && !(upcomingToken is StatementSeparatorToken))
             {
                 yield return NextToken();
+                upcomingToken = PeekNextToken(); //Update upcomingToken
             }
             NextToken(); //Skip the statement separator
         }

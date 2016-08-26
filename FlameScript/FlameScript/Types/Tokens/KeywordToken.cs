@@ -9,6 +9,7 @@ namespace FlameScript.Types.Tokens
         {
             { "if", KeywordType.If },
             { "num", KeywordType.Number },
+            { "str", KeywordType.String },
             { "return", KeywordType.Return },
             { "void", KeywordType.Void },
             { "while", KeywordType.While },
@@ -17,6 +18,7 @@ namespace FlameScript.Types.Tokens
         private static readonly Dictionary<KeywordType, VariableType> keywordTypeToVariableTypeMappings = new Dictionary<KeywordType, VariableType>
         {
             { KeywordType.Number, VariableType.Number },
+            { KeywordType.String, VariableType.String },
             { KeywordType.Void, VariableType.Void },
         };
 

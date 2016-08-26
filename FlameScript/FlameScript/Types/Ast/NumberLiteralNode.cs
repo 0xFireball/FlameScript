@@ -1,6 +1,6 @@
 ﻿namespace FlameScript.Types.Ast
 {
-    public class NumberLiteralNode : ExpressionNode
+    public class NumberLiteralNode : LiteralNode
     {
         public double Value { get; private set; }
 

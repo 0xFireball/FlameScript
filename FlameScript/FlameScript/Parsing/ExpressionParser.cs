@@ -10,7 +10,7 @@ namespace FlameScript.Parsing
     /// Parser for FlameScript expressions. Used internally by the parser.
     /// </summary>
     /// <remarks>
-    /// Uses the shunting-yard algorithm by Dijkstra.
+    /// Uses an algorithm based on the shunting-yard algorithm by Dijkstra.
     /// Good explanation here: http://wcipeg.com/wiki/Shunting_yard_algorithm
     /// </remarks>
     public class ExpressionParser
@@ -76,9 +76,12 @@ namespace FlameScript.Parsing
             foreach (var token in tokens)
             {
                 sequenceWasEmpty = false;
-                if (token is NumberLiteralToken)
+                if (token is LiteralToken)
                 {
-                    working.Push(new NumberLiteralNode(((NumberLiteralToken)token).Number));
+                    if (token is NumberLiteralToken)
+                        working.Push(new NumberLiteralNode(((NumberLiteralToken)token).Number));
+                    else if (token is StringLiteralToken)
+                        working.Push(new StringLiteralNode(((StringLiteralToken)token).String));
                     lastTokenWasOperatorOrLeftBrace = false;
                 }
                 else if (token is OperatorToken)

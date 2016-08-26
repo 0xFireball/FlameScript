@@ -3,6 +3,21 @@
 
 An experimental scripting language thing
 
+## Features
+
+### Implemented
+
+- Lexing and parsing from code to AST
+
+### In Progress
+
+- Execution through an interpreter
+
+### Planned
+
+- Compilation to VM code
+- Execution in a VM context
+
 ## Language specifications
 
 See the [language specifications](langspecs.md) page

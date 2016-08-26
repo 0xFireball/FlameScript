@@ -1,7 +1,11 @@
 
 # FlameScript
 
-An experimental scripting thing
+An experimental scripting language thing
+
+## Language specifications
+
+See the [language specifications](langspecs.md) page
 
 ## Acknowledgements
 

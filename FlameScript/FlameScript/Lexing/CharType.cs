@@ -8,7 +8,7 @@ namespace FlameScript.Lexing
     /// compund values.
     /// </summary>
     [Flags]
-    internal enum CharType
+    public enum CharType
     {
         /// <summary>
         /// Unknown. This is 0x00, so it can't be checked with HasFlag!

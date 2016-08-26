@@ -50,6 +50,7 @@
     <Compile Include="Parsing\ParsingException.cs" />
     <Compile Include="Parsing\UnexpectedTokenException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Runtime\Interpreter\FlameScriptInterpreter.cs" />
     <Compile Include="Types\AstNode.cs" />
     <Compile Include="Types\Ast\BinaryOperationNode.cs" />
     <Compile Include="Types\Ast\ExpressionNode.cs" />
@@ -84,7 +85,7 @@
     <Compile Include="Types\Tokens\VariableType.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Runtime\" />
+    <Folder Include="Compiling\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

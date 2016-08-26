@@ -69,7 +69,19 @@ namespace FlameScript.Lexing
         //compund values:
         AlphaNumeric = Alpha | Numeric,
 
+        /// <summary>
+        /// A numeric type, but allowing for numbers in decimal form (x.xx)
+        /// </summary>
+        DecimalNumeric = Numeric | MemberAccess,
+
+        /// <summary>
+        /// Whitespace characters. These are mostly ignored
+        /// </summary>
         WhiteSpace = LineSpace | NewLine,
+
+        /// <summary>
+        /// Grouping characters. These come in pairs, opening and closing
+        /// </summary>
         Brace = OpenBrace | CloseBrace,
 
         /// <summary>

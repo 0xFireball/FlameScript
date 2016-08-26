@@ -8,15 +8,15 @@ namespace FlameScript.Types.Tokens
         private static readonly Dictionary<string, KeywordType> validKeywords = new Dictionary<string, KeywordType>()
         {
             { "if", KeywordType.If },
-            { "int", KeywordType.Int },
+            { "num", KeywordType.Number },
             { "return", KeywordType.Return },
             { "void", KeywordType.Void },
             { "while", KeywordType.While },
         };
 
-        private static readonly Dictionary<KeywordType, VariableType> keywordTypeToVariableType = new Dictionary<KeywordType, VariableType>
+        private static readonly Dictionary<KeywordType, VariableType> keywordTypeToVariableTypeMappings = new Dictionary<KeywordType, VariableType>
         {
-            { KeywordType.Int, VariableType.Int },
+            { KeywordType.Number, VariableType.Number },
             { KeywordType.Void, VariableType.Void },
         };
 
@@ -28,7 +28,7 @@ namespace FlameScript.Types.Tokens
         /// </summary>
         public bool IsTypeKeyword
         {
-            get { return keywordTypeToVariableType.ContainsKey(KeywordType); }
+            get { return keywordTypeToVariableTypeMappings.ContainsKey(KeywordType); }
         }
 
         public KeywordToken(string name)
@@ -56,7 +56,7 @@ namespace FlameScript.Types.Tokens
         /// </summary>
         public VariableType ToVariableType()
         {
-            return keywordTypeToVariableType[KeywordType];
+            return keywordTypeToVariableTypeMappings[KeywordType];
         }
     }
 }

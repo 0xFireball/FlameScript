@@ -4,7 +4,7 @@ namespace FlameScript.Types.Tokens
 {
     public class NumberLiteralToken : Token
     {
-        public int Number
+        public double Number
         {
             get
             {
@@ -12,12 +12,12 @@ namespace FlameScript.Types.Tokens
             }
         }
 
-        private int number;
+        private double number;
 
         public NumberLiteralToken(string name)
             : base(name)
         {
-            if (!int.TryParse(name, out number))
+            if (!double.TryParse(name, out number))
                 throw new ArgumentException("The name is not a valid number literal.", nameof(name));
         }
     }

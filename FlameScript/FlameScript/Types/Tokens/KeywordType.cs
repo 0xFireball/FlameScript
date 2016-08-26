@@ -8,7 +8,7 @@ namespace FlameScript.Types.Tokens
 {
     public enum KeywordType
     {
-        Int,
+        Number,
         Void,
         Return,
         If,

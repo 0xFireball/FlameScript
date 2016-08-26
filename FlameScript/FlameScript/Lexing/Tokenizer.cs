@@ -51,8 +51,8 @@ namespace FlameScript.Lexing
                         builder.Clear();
                         break;
 
-                    case CharType.Numeric: //start of number literal
-                        ReadToken(builder, CharType.Numeric);
+                    case CharType.Numeric: //start of number literal, allow for decimal numbers too
+                        ReadToken(builder, CharType.DecimalNumeric);
                         tokens.Add(new NumberLiteralToken(builder.ToString()));
                         builder.Clear();
                         break;

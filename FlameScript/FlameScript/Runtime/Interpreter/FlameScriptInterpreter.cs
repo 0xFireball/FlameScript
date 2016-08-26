@@ -12,14 +12,31 @@ namespace FlameScript.Runtime.Interpreter
         public ProgramNode SyntaxTree;
 
         public List<FunctionDeclarationNode> Methods;
-        public List<Variable> Variables;
+        public List<Variable> GlobalVariables;
+
+        private Stack<List<Variable>> MethodScopeVariables;
+        private List<Variable> CurrentContextScopeVariables => MethodScopeVariables.Peek();
+        private List<Variable> CurrentVariablesInScope => GetCurrentVariablesInScope();
+
+        private VariableScope CurrentVariableScope { get; set; }
+
+        private List<Variable> GetCurrentVariablesInScope()
+        {
+            if (CurrentContextScopeVariables != null)
+                return CurrentContextScopeVariables.Concat(GlobalVariables).ToList();
+            else
+                return GlobalVariables;
+        }
 
         public FlameScriptInterpreter(ProgramNode syntaxTree)
         {
             SyntaxTree = syntaxTree;
 
-            Variables = new List<Variable>();
+            GlobalVariables = new List<Variable>();
             Methods = new List<FunctionDeclarationNode>();
+
+            MethodScopeVariables = new Stack<List<Variable>>();
+            MethodScopeVariables.Push(new List<Variable>()); //Buffer layer
         }
 
         public void ExecuteProgram()
@@ -40,9 +57,14 @@ namespace FlameScript.Runtime.Interpreter
             var nonMethodDeclarationNodes = SyntaxTree.SubNodes.Except(Methods).ToList();
 
             //TODO: Execute all non-method declaration nodes on the global scope
+            CurrentVariableScope = VariableScope.Global;
             ExecuteNodes(nonMethodDeclarationNodes);
 
             //TODO: Begin normal execution at the entry point
+            CurrentVariableScope = VariableScope.Local;
+
+            //Create variable scope for main() method
+
             ExecuteNodes(entryPointMethod.SubNodes.ToList());
         }
 
@@ -51,22 +73,59 @@ namespace FlameScript.Runtime.Interpreter
             foreach (var nodeToExecute in nonMethodDeclarationNodes)
             {
                 TypeSwitch.On(nodeToExecute)
-                    .Case((VariableDeclarationNode node) =>
+                    .Case((VariableDeclarationNode variableDeclarationNode) =>
                     {
-                        var newVar = new Variable { Name = node.Name, Value = EvaluateExpression(node.InitialValueExpression) };
-                        Variables.Add(newVar);
+                        var newVar = new Variable { Name = variableDeclarationNode.Name, Value = EvaluateExpression(variableDeclarationNode.InitialValueExpression) };
+                        if (CurrentVariableScope == VariableScope.Global)
+                            GlobalVariables.Add(newVar);
+                        else
+                            CurrentContextScopeVariables.Add(newVar);
                     })
-                    .Case((VariableAssignmentNode node) =>
+                    .Case((FunctionCallExpressionNode functionCallNode) =>
                     {
-                        var matchedVariables = Variables.Where(var => var.Name == node.VariableName).ToList();
-                        if (matchedVariables.Count == 1)
+                        var matchedMethods = Methods.Where(method => method.FunctionName == functionCallNode.FunctionName).ToList();
+                        if (matchedMethods.Count == 1)
                         {
-                            var currentVariable = matchedVariables[0];
-                            currentVariable.Value = EvaluateExpression(node.ValueExpression);
+                            var currentMethod = matchedMethods[0];
+                            //Create method scope variables
+                            var methodArgumentVariables = new List<Variable>();
+
+                            var methodCallArguments = functionCallNode.Arguments.ToList();
+                            var methodSigArguments = currentMethod.Parameters.ToList();
+
+                            //Create
+                            var createdArgumentVariables = methodSigArguments.Zip(methodCallArguments, (sigArg, callArg) =>
+                            {
+                                var outputVariable = new Variable
+                                {
+                                    Name = sigArg.Name,
+                                    Value = EvaluateExpression(callArg)
+                                };
+                                return outputVariable;
+                            });
+
+                            methodArgumentVariables.AddRange(createdArgumentVariables);
+
+                            MethodScopeVariables.Push(methodArgumentVariables);
+                            ExecuteNodes(currentMethod.SubNodes.ToList());
+                            MethodScopeVariables.Pop();
                         }
                         else
                         {
-                            throw new UnknownNameError("No variable with the given name exists.", node.VariableName);
+                            throw new UnknownNameError("No method with the given name exists.", functionCallNode.FunctionName);
+                        }
+                    })
+                    .Case((VariableAssignmentNode variableAssignmentNode) =>
+                    {
+                        var matchedVariables = CurrentVariablesInScope.Where(var => var.Name == variableAssignmentNode.VariableName).ToList();
+                        if (matchedVariables.Count == 1)
+                        {
+                            var currentVariable = matchedVariables[0];
+                            currentVariable.Value = EvaluateExpression(variableAssignmentNode.ValueExpression);
+                        }
+                        else
+                        {
+                            throw new UnknownNameError("No variable with the given name exists.", variableAssignmentNode.VariableName);
                         }
                     });
             }
@@ -87,7 +146,7 @@ namespace FlameScript.Runtime.Interpreter
             else if (valueExpression is VariableReferenceExpressionNode)
             {
                 var variableReference = valueExpression as VariableReferenceExpressionNode;
-                var matchedVariables = Variables.Where(var => var.Name == variableReference.VariableName).ToList();
+                var matchedVariables = CurrentVariablesInScope.Where(var => var.Name == variableReference.VariableName).ToList();
                 if (matchedVariables.Count == 1)
                 {
                     var currentVariable = matchedVariables[0];

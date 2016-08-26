@@ -83,79 +83,103 @@ namespace FlameScript.Runtime.Interpreter
                     })
                     .Case((FunctionCallExpressionNode functionCallNode) =>
                     {
-                        var matchedMethods = Methods.Where(method => method.FunctionName == functionCallNode.FunctionName).ToList();
-                        if (matchedMethods.Count == 1)
-                        {
-                            var currentMethod = matchedMethods[0];
-                            //Create method scope variables
-                            var methodArgumentVariables = new List<Variable>();
-
-                            var methodCallArguments = functionCallNode.Arguments.ToList();
-                            var methodSigArguments = currentMethod.Parameters.ToList();
-
-                            //Create
-                            var createdArgumentVariables = methodSigArguments.Zip(methodCallArguments, (sigArg, callArg) =>
-                            {
-                                var outputVariable = new Variable
-                                {
-                                    Name = sigArg.Name,
-                                    Value = EvaluateExpression(callArg)
-                                };
-                                return outputVariable;
-                            });
-
-                            methodArgumentVariables.AddRange(createdArgumentVariables);
-
-                            MethodScopeVariables.Push(methodArgumentVariables);
-                            ExecuteNodes(currentMethod.SubNodes.ToList());
-                            MethodScopeVariables.Pop();
-                        }
-                        else
-                        {
-                            throw new UnknownNameError("No method with the given name exists.", functionCallNode.FunctionName);
-                        }
+                        var currentMethod = GetReferencedMethod(functionCallNode);
+                        //This will be a call without regard to return type
+                        CreateMethodCall(functionCallNode, currentMethod);
+                    })
+                    .Case((ReturnStatementNode returnStatementNode) =>
+                    {
+                        //If there is a return statement, we're obviously in a method scope
+                        CurrentContextScopeVariables.Add(new Variable { Name = "$return", Value = EvaluateExpression(returnStatementNode.ValueExpression) ?? null });
                     })
                     .Case((VariableAssignmentNode variableAssignmentNode) =>
                     {
-                        var matchedVariables = CurrentVariablesInScope.Where(var => var.Name == variableAssignmentNode.VariableName).ToList();
-                        if (matchedVariables.Count == 1)
-                        {
-                            var currentVariable = matchedVariables[0];
-                            currentVariable.Value = EvaluateExpression(variableAssignmentNode.ValueExpression);
-                        }
-                        else
-                        {
-                            throw new UnknownNameError("No variable with the given name exists.", variableAssignmentNode.VariableName);
-                        }
+                        var currentVariable = GetReferencedVariable(variableAssignmentNode.VariableName);
+                        currentVariable.Value = EvaluateExpression(variableAssignmentNode.ValueExpression);
                     });
             }
         }
 
-        private dynamic EvaluateExpression(ExpressionNode valueExpression)
+        private Variable GetReferencedVariable(string variableName)
         {
-            if (valueExpression is NumberLiteralNode) //Easy, it's a number
+            var matchedVariables = CurrentVariablesInScope.Where(var => var.Name == variableName).ToList();
+            if (matchedVariables.Count == 1)
             {
-                var expressionResult = valueExpression as NumberLiteralNode;
+                var currentVariable = matchedVariables[0];
+                return currentVariable;
+            }
+            else
+            {
+                throw new UnknownNameError("No variable with the given name exists.", variableName);
+            }
+        }
+
+        private FunctionDeclarationNode GetReferencedMethod(FunctionCallExpressionNode functionCallNode)
+        {
+            var matchedMethods = Methods.Where(method => method.FunctionName == functionCallNode.FunctionName).ToList();
+            if (matchedMethods.Count == 1)
+            {
+                var currentMethod = matchedMethods[0];
+                return currentMethod;
+            }
+            else
+            {
+                throw new UnknownNameError("No method with the given name exists.", functionCallNode.FunctionName);
+            }
+        }
+
+        private Variable CreateMethodCall(FunctionCallExpressionNode functionCallNode, FunctionDeclarationNode currentMethod)
+        {
+            //Create method scope variables
+            var methodArgumentVariables = new List<Variable>();
+
+            var methodCallArguments = functionCallNode.Arguments.ToList();
+            var methodSigArguments = currentMethod.Parameters.ToList();
+
+            //Create
+            var createdArgumentVariables = methodSigArguments.Zip(methodCallArguments, (sigArg, callArg) =>
+            {
+                var outputVariable = new Variable
+                {
+                    Name = sigArg.Name,
+                    Value = EvaluateExpression(callArg)
+                };
+                return outputVariable;
+            });
+
+            methodArgumentVariables.AddRange(createdArgumentVariables);
+
+            MethodScopeVariables.Push(methodArgumentVariables);
+            ExecuteNodes(currentMethod.SubNodes.ToList());
+            var returnedVariable = CurrentContextScopeVariables.Where(variable => variable.Name == "$return").ToList()[0];
+            MethodScopeVariables.Pop();
+            return returnedVariable;
+        }
+
+        private dynamic EvaluateExpression(ExpressionNode expressionNode)
+        {
+            if (expressionNode is NumberLiteralNode) //Easy, it's a number
+            {
+                var expressionResult = expressionNode as NumberLiteralNode;
                 return expressionResult.Value;
             }
-            else if (valueExpression is BinaryOperationNode)
+            else if (expressionNode is BinaryOperationNode)
             {
-                var expressionOperation = valueExpression as BinaryOperationNode;
+                var expressionOperation = expressionNode as BinaryOperationNode;
                 return DoBinaryOperation(expressionOperation);
             }
-            else if (valueExpression is VariableReferenceExpressionNode)
+            else if (expressionNode is VariableReferenceExpressionNode)
             {
-                var variableReference = valueExpression as VariableReferenceExpressionNode;
-                var matchedVariables = CurrentVariablesInScope.Where(var => var.Name == variableReference.VariableName).ToList();
-                if (matchedVariables.Count == 1)
-                {
-                    var currentVariable = matchedVariables[0];
-                    return currentVariable.Value;
-                }
-                else
-                {
-                    throw new UnknownNameError("No variable with the given name exists.", variableReference.VariableName);
-                }
+                var variableReference = expressionNode as VariableReferenceExpressionNode;
+                var currentVariable = GetReferencedVariable(variableReference.VariableName);
+                return currentVariable.Value;
+            }
+            else if (expressionNode is FunctionCallExpressionNode)
+            {
+                var functionCallExpression = expressionNode as FunctionCallExpressionNode;
+                var methodRef = GetReferencedMethod(functionCallExpression);
+                var methodCallReturn = CreateMethodCall(functionCallExpression, methodRef);
+                return methodCallReturn.Value;
             }
             //Error evaluating expression (should really throw an error or something)
             return null;
@@ -168,6 +192,13 @@ namespace FlameScript.Runtime.Interpreter
             {
                 case ExpressionOperationType.Add:
                     return EvaluateExpression(expressionOperation.OperandA) + EvaluateExpression(expressionOperation.OperandB);
+
+                case ExpressionOperationType.Assignment:
+                    var evaluatedValue = EvaluateExpression(expressionOperation.OperandB);
+                    var targetVariableReferenceNode = expressionOperation.OperandA as VariableReferenceExpressionNode;
+                    var targetVariable = GetReferencedVariable(targetVariableReferenceNode.VariableName);
+                    targetVariable.Value = evaluatedValue;
+                    break;
                     //TODO: Implement the rest of them
             }
             //Error doing operation (should really throw an error or something)

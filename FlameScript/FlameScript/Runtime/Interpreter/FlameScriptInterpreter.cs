@@ -197,6 +197,9 @@ namespace FlameScript.Runtime.Interpreter
                 case ExpressionOperationType.Add:
                     return EvaluateExpression(expressionOperation.OperandA) + EvaluateExpression(expressionOperation.OperandB);
 
+                case ExpressionOperationType.Multiply:
+                    return EvaluateExpression(expressionOperation.OperandA) * EvaluateExpression(expressionOperation.OperandB);
+
                 case ExpressionOperationType.Assignment:
                     var evaluatedValue = EvaluateExpression(expressionOperation.OperandB);
                     var targetVariableReferenceNode = expressionOperation.OperandA as VariableReferenceExpressionNode;

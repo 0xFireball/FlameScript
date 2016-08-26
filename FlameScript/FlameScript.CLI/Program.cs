@@ -24,6 +24,7 @@ namespace FlameScript.CLI
 
             //Parse the tokenized code, and create an AST
             var parser = new Parser(tokens);
+            var ast = parser.ParseToAst();
         }
     }
 }

@@ -1,11 +1,8 @@
 ﻿using FlameScript.Types;
 using FlameScript.Types.Ast;
 using FlameScript.Types.Tokens;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FlameScript.Parsing
 {
@@ -87,7 +84,7 @@ namespace FlameScript.Parsing
                 else if (token is OperatorToken)
                 {
                     ExpressionOperationType op;
-                    if (((OperatorToken)token).OperatorType == OperatorType.SubstractNegate) //need to check if binary of unary
+                    if (((OperatorToken)token).OperatorType == OperatorType.SubstractNegate) //need to check if binary or unary
                         op = lastTokenWasOperatorOrLeftBrace ? ExpressionOperationType.Negate : ExpressionOperationType.Substract;
                     else //normal operator
                         op = operatorToOperation[((OperatorToken)token).OperatorType];

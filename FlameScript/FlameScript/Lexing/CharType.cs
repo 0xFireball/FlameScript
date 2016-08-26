@@ -66,6 +66,11 @@ namespace FlameScript.Lexing
         /// </summary>
         MemberAccess = 0x200,
 
+        /// <summary>
+        /// " The double quote symbol as a string delimiter
+        /// </summary>
+        StringDelimiter = 0x400,
+
         //compund values:
         AlphaNumeric = Alpha | Numeric,
 

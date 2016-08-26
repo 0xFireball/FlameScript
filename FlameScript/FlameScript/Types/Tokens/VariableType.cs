@@ -3,6 +3,7 @@
     public enum VariableType
     {
         Number,
+        String,
         Void,
     }
 }

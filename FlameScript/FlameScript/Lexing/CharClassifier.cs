@@ -29,6 +29,9 @@ namespace FlameScript.Lexing
                 case '}':
                     return CharType.CloseBrace;
 
+                case '"':
+                    return CharType.StringDelimiter;
+
                 case ',':
                     return CharType.ArgSeperator;
 

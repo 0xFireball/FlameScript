@@ -14,11 +14,11 @@ namespace FlameScript.Types.Tokens
 
         private double number;
 
-        public NumberLiteralToken(string name)
-            : base(name)
+        public NumberLiteralToken(string content)
+            : base(content)
         {
-            if (!double.TryParse(name, out number))
-                throw new ArgumentException("The name is not a valid number literal.", nameof(name));
+            if (!double.TryParse(content, out number))
+                throw new ArgumentException("The name is not a valid number literal.", nameof(content));
         }
     }
 }

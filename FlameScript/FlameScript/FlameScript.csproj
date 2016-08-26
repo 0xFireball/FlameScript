@@ -87,6 +87,7 @@
     <Compile Include="Types\Tokens\OperatorToken.cs" />
     <Compile Include="Types\Tokens\OperatorType.cs" />
     <Compile Include="Types\Tokens\StatementSeparatorToken.cs" />
+    <Compile Include="Types\Tokens\StringLiteralToken.cs" />
     <Compile Include="Types\Tokens\VariableType.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -46,7 +46,7 @@ namespace FlameScript.Lexing
                 switch (nextCharType)
                 {
                     case CharType.Alpha: //start of identifier
-                        ReadToken(builder, CharType.AlphaNumeric);
+                        ReadTokens(builder, CharType.AlphaNumeric);
                         string s = builder.ToString();
                         if (KeywordToken.IsKeyword(s))
                             tokens.Add(new KeywordToken(s));
@@ -55,15 +55,23 @@ namespace FlameScript.Lexing
                         builder.Clear();
                         break;
 
+                    case CharType.StringDelimiter:
+                        NextCharacter(); //Skip the opening quote
+                        ReadTokensUntil(builder, CharType.StringDelimiter);
+                        NextCharacter(); //Skip the ending quote
+                        tokens.Add(new StringLiteralToken(builder.ToString()));
+                        builder.Clear();
+                        break;
+
                     case CharType.Numeric: //start of number literal, allow for decimal numbers too
-                        ReadToken(builder, CharType.DecimalNumeric);
+                        ReadTokens(builder, CharType.DecimalNumeric);
                         tokens.Add(new NumberLiteralToken(builder.ToString()));
                         builder.Clear();
                         break;
 
                     case CharType.Operator:
                         //It is an operator
-                        ReadToken(builder, CharType.Operator);
+                        ReadTokens(builder, CharType.Operator);
                         tokens.Add(new OperatorToken(builder.ToString()));
                         builder.Clear();
                         break;
@@ -119,11 +127,25 @@ namespace FlameScript.Lexing
         /// Reads characters into the StringBuilder while they match
         /// the given type(s).
         /// </summary>
-        private void ReadToken(StringBuilder builder, CharType charTypeToRead)
+        private void ReadTokens(StringBuilder builder, CharType charTypeToRead)
         {
             while (!EndOfCode && PeekNextCharacterType().HasAnyFlag(charTypeToRead))
             {
                 builder.Append(NextCharacter());
+            }
+        }
+
+        /// <summary>
+        /// Reads characters into the StringBuilder while they match
+        /// the given type(s).
+        /// </summary>
+        private void ReadTokensUntil(StringBuilder builder, CharType charTypeToStopAt)
+        {
+            var upcomingCharacterType = PeekNextCharacterType();
+            while (!EndOfCode && !upcomingCharacterType.HasAnyFlag(charTypeToStopAt))
+            {
+                builder.Append(NextCharacter());
+                upcomingCharacterType = PeekNextCharacterType();
             }
         }
 

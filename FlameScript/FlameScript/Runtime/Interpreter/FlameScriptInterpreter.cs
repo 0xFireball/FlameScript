@@ -27,9 +27,14 @@ namespace FlameScript.Runtime.Interpreter
             //Build method table
 
             Methods.AddRange(SyntaxTree.SubNodes.Where(subNode => subNode is FunctionDeclarationNode).Cast<FunctionDeclarationNode>());
+            //TODO: Throw errors on duplicates, etc.
 
             //Get the entry point of the program
-            var entryPointFunction = Methods.Where(function => function.FunctionName == "main");
+            var entryPointMethodCandidates = Methods.Where(function => function.FunctionName == "main").ToList();
+
+            if (entryPointMethodCandidates.Count == 0)
+                throw new InterpreterRuntimeException("No entry point method could be found.");
+            var entryPointMethod = entryPointMethodCandidates[0];
 
             //Begin execution on global scope
             var nonMethodDeclarationNodes = SyntaxTree.SubNodes.Except(Methods).ToList();
@@ -38,6 +43,7 @@ namespace FlameScript.Runtime.Interpreter
             ExecuteNodes(nonMethodDeclarationNodes);
 
             //TODO: Begin normal execution at the entry point
+            ExecuteNodes(entryPointMethod.SubNodes.ToList());
         }
 
         private void ExecuteNodes(List<AstNode> nonMethodDeclarationNodes)
@@ -77,6 +83,20 @@ namespace FlameScript.Runtime.Interpreter
             {
                 var expressionOperation = valueExpression as BinaryOperationNode;
                 return DoBinaryOperation(expressionOperation);
+            }
+            else if (valueExpression is VariableReferenceExpressionNode)
+            {
+                var variableReference = valueExpression as VariableReferenceExpressionNode;
+                var matchedVariables = Variables.Where(var => var.Name == variableReference.VariableName).ToList();
+                if (matchedVariables.Count == 1)
+                {
+                    var currentVariable = matchedVariables[0];
+                    return currentVariable.Value;
+                }
+                else
+                {
+                    throw new UnknownNameError("No variable with the given name exists.", variableReference.VariableName);
+                }
             }
             //Error evaluating expression (should really throw an error or something)
             return null;

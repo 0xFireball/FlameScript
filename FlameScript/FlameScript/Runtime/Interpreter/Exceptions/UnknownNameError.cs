@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 
 namespace FlameScript.Runtime.Interpreter.Exceptions
 {
-    public class UnknownNameError : Exception
+    public class UnknownNameError : InterpreterRuntimeException
     {
         public string VariableName { get; }
 

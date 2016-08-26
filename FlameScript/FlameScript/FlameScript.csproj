@@ -50,7 +50,10 @@
     <Compile Include="Parsing\ParsingException.cs" />
     <Compile Include="Parsing\UnexpectedTokenException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Runtime\Interpreter\Exceptions\UnknownNameError.cs" />
     <Compile Include="Runtime\Interpreter\FlameScriptInterpreter.cs" />
+    <Compile Include="Runtime\Interpreter\TypeSwitch.cs" />
+    <Compile Include="Runtime\Interpreter\Types\Variable.cs" />
     <Compile Include="Types\AstNode.cs" />
     <Compile Include="Types\Ast\BinaryOperationNode.cs" />
     <Compile Include="Types\Ast\ExpressionNode.cs" />

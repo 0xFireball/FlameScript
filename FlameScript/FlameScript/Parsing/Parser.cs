@@ -41,7 +41,8 @@ namespace FlameScript.Parsing
 
             while (!EndOfProgram)
             {
-                if (PeekNextToken() is KeywordToken)
+                var upcomingToken = PeekNextToken();
+                if (upcomingToken is KeywordToken)
                 {
                     var keyword = (KeywordToken)NextToken();
 
@@ -131,10 +132,10 @@ namespace FlameScript.Parsing
                         }
                     }
                 }
-                else if (PeekNextToken() is IdentifierToken && _scopes.Count > 1) //in nested scope
+                else if (upcomingToken is IdentifierToken && _scopes.Count > 1) //in nested scope
                 {
                     var name = ReadNextToken<IdentifierToken>();
-                    if (PeekNextToken() is OperatorToken && ((OperatorToken)PeekNextToken()).OperatorType == OperatorType.Assignment) //variable assignment
+                    if (upcomingToken is OperatorToken && ((OperatorToken)upcomingToken).OperatorType == OperatorType.Assignment) //variable assignment
                     {
                         NextToken(); //skip the "="
                         _scopes.Peek().AddStatement(new VariableAssignmentNode(name.Content, ExpressionNode.CreateFromTokens(ReadUntilStatementSeparator())));
@@ -142,7 +143,7 @@ namespace FlameScript.Parsing
                     else //lone expression (incl. function calls!)
                         _scopes.Peek().AddStatement(ExpressionNode.CreateFromTokens(new[] { name }.Concat(ReadUntilStatementSeparator()))); //don't forget the name here!
                 }
-                else if (PeekNextToken() is CloseBraceToken)
+                else if (upcomingToken is CloseBraceToken)
                 {
                     var brace = ReadNextToken<CloseBraceToken>();
                     if (brace.BraceType != BraceType.Curly)
@@ -150,7 +151,7 @@ namespace FlameScript.Parsing
                     _scopes.Pop(); //Scope has been closed!
                 }
                 else
-                    throw new ParsingException("The parser ran into an unexpeted token.");
+                    throw new UnexpectedTokenException("The parser ran into an unexpeted token", upcomingToken);
             }
 
             if (_scopes.Count != 1)

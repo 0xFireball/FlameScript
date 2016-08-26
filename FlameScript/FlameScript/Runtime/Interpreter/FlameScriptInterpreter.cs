@@ -92,6 +92,10 @@ namespace FlameScript.Runtime.Interpreter
                         //If there is a return statement, we're obviously in a method scope
                         CurrentContextScopeVariables.Add(new Variable { Name = "$return", Value = EvaluateExpression(returnStatementNode.ValueExpression) ?? null });
                     })
+                    .Case((BinaryOperationNode binaryOperationNode) =>
+                    {
+                        DoBinaryOperation(binaryOperationNode);
+                    })
                     .Case((VariableAssignmentNode variableAssignmentNode) =>
                     {
                         var currentVariable = GetReferencedVariable(variableAssignmentNode.VariableName);
@@ -103,7 +107,7 @@ namespace FlameScript.Runtime.Interpreter
         private Variable GetReferencedVariable(string variableName)
         {
             var matchedVariables = CurrentVariablesInScope.Where(var => var.Name == variableName).ToList();
-            if (matchedVariables.Count == 1)
+            if (matchedVariables.Count > 0)
             {
                 var currentVariable = matchedVariables[0];
                 return currentVariable;

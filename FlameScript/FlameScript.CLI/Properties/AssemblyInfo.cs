@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("FlameScript.CLI")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("FlameScript Command Line Executor")]
+[assembly: AssemblyDescription("FlameScript Command Line Executor")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("IridiumIon Software")]
 [assembly: AssemblyProduct("FlameScript.CLI")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyCopyright("Copyright ©  2016 IridiumIon Software")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

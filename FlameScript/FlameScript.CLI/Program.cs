@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FlameScript.Lexing;
+using System;
+using System.IO;
 
 namespace FlameScript.CLI
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             if (args.Length == 0)
             {
@@ -17,6 +15,9 @@ namespace FlameScript.CLI
             }
             var scriptPath = args[0];
 
+            var code = File.ReadAllText(scriptPath);
+            var tokenizer = new Tokenizer(code);
+            var tokens = tokenizer.Tokenize();
         }
     }
 }

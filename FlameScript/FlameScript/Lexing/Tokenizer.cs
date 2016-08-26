@@ -1,4 +1,5 @@
 ﻿using FlameScript.Types;
+using FlameScript.Types.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -25,7 +26,7 @@ namespace FlameScript.Lexing
             Code = code;
         }
 
-        public List<Token> Tokenize()
+        public Token[] Tokenize()
         {
             var tokens = new List<Token>();
             var builder = new StringBuilder();
@@ -33,13 +34,70 @@ namespace FlameScript.Lexing
             while (!EndOfCode)
             {
                 SkipCharacter(CharType.WhiteSpace);
+                switch (PeekNextCharacterType())
+                {
+                    case CharType.Alpha: //start of identifier
+                        ReadToken(builder, CharType.AlphaNumeric);
+                        string s = builder.ToString();
+                        if (KeywordToken.IsKeyword(s))
+                            tokens.Add(new KeywordToken(s));
+                        else
+                            tokens.Add(new IdentifierToken(s));
+                        builder.Clear();
+                        break;
+
+                    case CharType.Numeric: //start of number literal
+                        ReadToken(builder, CharType.Numeric);
+                        tokens.Add(new NumberLiteralToken(builder.ToString()));
+                        builder.Clear();
+                        break;
+
+                    case CharType.Operator:
+                        ReadToken(builder, CharType.Operator);
+                        tokens.Add(new OperatorToken(builder.ToString()));
+                        builder.Clear();
+                        break;
+
+                    case CharType.OpenBrace:
+                        tokens.Add(new OpenBraceToken(NextCharacter().ToString()));
+                        break;
+
+                    case CharType.CloseBrace:
+                        tokens.Add(new CloseBraceToken(NextCharacter().ToString()));
+                        break;
+
+                    case CharType.ArgSeperator:
+                        tokens.Add(new ArgSeperatorToken(NextCharacter().ToString()));
+                        break;
+
+                    case CharType.StatementSeperator:
+                        tokens.Add(new StatementSperatorToken(NextCharacter().ToString()));
+                        break;
+
+                    default:
+                        throw new Exception("The tokenizer found an unidentifiable character.");
+                }
+            }
+
+            return tokens.ToArray();
+        }
+
+        /// <summary>
+        /// Reads characters into the StringBuilder while they match
+        /// the given type(s).
+        /// </summary>
+        private void ReadToken(StringBuilder builder, CharType charTypeToRead)
+        {
+            while (!EndOfCode && PeekNextCharacterType().HasAnyFlag(charTypeToRead))
+            {
+                builder.Append(NextCharacter());
             }
         }
 
         private void SkipCharacter(CharType charTypeToSkip)
         {
             while (PeekNextCharacterType().HasAnyFlag(charTypeToSkip))
-                next();
+                NextCharacter();
         }
 
         private CharType PeekNextCharacterType() => PeekNextCharacter().GetCharType();

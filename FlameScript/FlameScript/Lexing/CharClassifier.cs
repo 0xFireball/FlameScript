@@ -37,7 +37,11 @@ namespace FlameScript.Lexing
 
                 case '\r': //\r and \n have UnicodeCategory.Control, not LineSeperator...
                 case '\n':
+                case '\t':
                     return CharType.NewLine;
+
+                case '.':
+                    return CharType.MemberAccess;
             }
 
             //then the categories

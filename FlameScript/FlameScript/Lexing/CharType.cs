@@ -61,6 +61,11 @@ namespace FlameScript.Lexing
         /// </summary>
         StatementSeperator = 0x100,
 
+        /// <summary>
+        /// . The period symbol for member access
+        /// </summary>
+        MemberAccess = 0x200,
+
         //compund values:
         AlphaNumeric = Alpha | Numeric,
 
@@ -70,7 +75,7 @@ namespace FlameScript.Lexing
         /// <summary>
         /// Chars that "have a special meaning".
         /// </summary>
-        MetaChar = Operator | Brace | ArgSeperator | StatementSeperator,
+        MetaChar = Operator | Brace | ArgSeperator | StatementSeperator | MemberAccess,
 
         All = AlphaNumeric | WhiteSpace | MetaChar,
     }

@@ -27,6 +27,10 @@ namespace FlameScript.Lexing
             Code = code;
         }
 
+        /// <summary>
+        /// Parses the input code and returns an array of Token objects.
+        /// </summary>
+        /// <returns></returns>
         public Token[] Tokenize()
         {
             var tokens = new List<Token>();
@@ -77,7 +81,7 @@ namespace FlameScript.Lexing
                         break;
 
                     case CharType.StatementSeperator:
-                        tokens.Add(new StatementSperatorToken(NextCharacter().ToString()));
+                        tokens.Add(new StatementSeparatorToken(NextCharacter().ToString()));
                         break;
 
                     default:

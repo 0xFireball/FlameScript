@@ -2,9 +2,9 @@
 
 namespace FlameScript.Types.Tokens
 {
-    public class StatementSperatorToken : Token
+    public class StatementSeparatorToken : Token
     {
-        public StatementSperatorToken(string symbol)
+        public StatementSeparatorToken(string symbol)
             : base(symbol)
         {
             if (symbol != ";")

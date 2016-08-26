@@ -1,4 +1,5 @@
 ﻿using FlameScript.Lexing;
+using FlameScript.Parsing;
 using System;
 using System.IO;
 
@@ -16,8 +17,13 @@ namespace FlameScript.CLI
             var scriptPath = args[0];
 
             var code = File.ReadAllText(scriptPath);
+
+            //Tokenize the code
             var tokenizer = new Tokenizer(code);
             var tokens = tokenizer.Tokenize();
+
+            //Parse the tokenized code, and create an AST
+            var parser = new Parser(tokens);
         }
     }
 }

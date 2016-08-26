@@ -4,7 +4,6 @@ using FlameScript.Types;
 using FlameScript.Types.Ast;
 using System.Collections.Generic;
 using System.Linq;
-using System;
 
 namespace FlameScript.Runtime.Interpreter
 {
@@ -61,7 +60,7 @@ namespace FlameScript.Runtime.Interpreter
                         }
                         else
                         {
-                            throw new UnknownNameError("No variable with the given name exists.");
+                            throw new UnknownNameError("No variable with the given name exists.", node.VariableName);
                         }
                     });
             }
@@ -80,7 +79,7 @@ namespace FlameScript.Runtime.Interpreter
                 return DoBinaryOperation(expressionOperation);
             }
             //Error evaluating expression (should really throw an error or something)
-            return null;            
+            return null;
         }
 
         private dynamic DoBinaryOperation(BinaryOperationNode expressionOperation)
@@ -90,7 +89,7 @@ namespace FlameScript.Runtime.Interpreter
             {
                 case ExpressionOperationType.Add:
                     return EvaluateExpression(expressionOperation.OperandA) + EvaluateExpression(expressionOperation.OperandB);
-                //TODO: Implement the rest of them
+                    //TODO: Implement the rest of them
             }
             //Error doing operation (should really throw an error or something)
             return null;

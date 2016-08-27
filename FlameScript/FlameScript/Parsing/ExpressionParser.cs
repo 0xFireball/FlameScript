@@ -103,27 +103,37 @@ namespace FlameScript.Parsing
                     operators.Push(op);
                     lastTokenWasOperatorOrLeftBrace = true;
                 }
-                else if (token is OpenBraceToken && ((OpenBraceToken)token).BraceType == BraceType.Round)
+                else if (token is OpenBraceToken)
                 {
-                    if (working.Count > 0 && working.Peek() is VariableReferenceExpressionNode) //we have a "variable" sitting on top of the op stack, this must be the name of a function to be called. Let's fix this.
+                    var openBraceToken = token as OpenBraceToken;
+                    if (openBraceToken.BraceType == BraceType.Round)
                     {
-                        var variable = (VariableReferenceExpressionNode)working.Pop();
-                        working.Push(new FunctionCallExpressionNode(variable.VariableName));
-                        operators.Push(ExpressionOperationType.FunctionCall);
-                        arity.Push(1);
+                        if (working.Count > 0 && working.Peek() is VariableReferenceExpressionNode)
+                        {
+                            //we have a "variable" sitting on top of the op stack, this must be the name of a function to be called.
+                            //Create a function call instead
+                            var variable = (VariableReferenceExpressionNode)working.Pop();
+                            working.Push(new FunctionCallExpressionNode(variable.VariableName));
+                            operators.Push(ExpressionOperationType.FunctionCall);
+                            arity.Push(1);
+                        }
                     }
 
                     operators.Push(ExpressionOperationType.OpenBrace);
                     lastTokenWasOperatorOrLeftBrace = true;
                 }
-                else if (token is CloseBraceToken && ((CloseBraceToken)token).BraceType == BraceType.Round)
+                else if (token is CloseBraceToken)
                 {
-                    while (operators.Peek() != ExpressionOperationType.OpenBrace)
-                        PopOperator();
-                    operators.Pop(); //pop the opening brace from the stack
+                    var closeBraceToken = token as CloseBraceToken;
+                    if (closeBraceToken.BraceType == BraceType.Round)
+                    {
+                        while (operators.Peek() != ExpressionOperationType.OpenBrace)
+                            PopOperator();
+                        operators.Pop(); //pop the opening brace from the stack
 
-                    if (operators.Count > 0 && operators.Peek() == ExpressionOperationType.FunctionCall) //function call sitting on top of the stack
-                        PopOperator();
+                        if (operators.Count > 0 && operators.Peek() == ExpressionOperationType.FunctionCall) //function call sitting on top of the stack
+                            PopOperator();
+                    }
 
                     lastTokenWasOperatorOrLeftBrace = false;
                 }
@@ -193,15 +203,15 @@ namespace FlameScript.Parsing
                 //add them to the function call sitting on top of the stack
                 ((FunctionCallExpressionNode)working.Peek()).AddArguments(args);
             }
-            else if (unaryOperators.Contains(op))
+            else if (unaryOperators.Contains(op)) //Unary
                 working.Push(new UnaryOperationNode(op, working.Pop()));
             else //binary
             {
                 //reverse order of operands!
-                var opB = working.Pop();
-                var opA = working.Pop();
+                var operandB = working.Pop();
+                var operandA = working.Pop();
 
-                working.Push(new BinaryOperationNode(op, opA, opB));
+                working.Push(new BinaryOperationNode(op, operandA, operandB));
             }
         }
     }

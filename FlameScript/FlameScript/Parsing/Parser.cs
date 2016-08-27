@@ -50,94 +50,76 @@ namespace FlameScript.Parsing
                 if (upcomingToken is KeywordToken)
                 {
                     var keyword = (KeywordToken)NextToken();
-
-                    if (_scopes.Count == 1) //we are a top level, the only valid keywords are variable types, starting a variable or function definition
+                    var globalScope = _scopes.Count == 1;
+                    if (keyword.IsTypeKeyword)
                     {
-                        if (keyword.IsTypeKeyword)
+                        var varType = keyword.ToVariableType();
+                        //it must be followed by a identifier:
+                        var name = ReadNextToken<IdentifierToken>();
+                        //so see what it is (function or variable):
+                        Token lookahead = PeekNextToken();
+                        if (lookahead is OperatorToken && (((OperatorToken)lookahead).OperatorType == OperatorType.Assignment) || lookahead is StatementSeparatorToken) //variable declaration
                         {
-                            var varType = keyword.ToVariableType();
-                            //it must be followed by a identifier:
-                            var name = ReadNextToken<IdentifierToken>();
-                            //so see what it is (function or variable):
-                            Token lookahead = PeekNextToken();
-                            if (lookahead is OperatorToken && (((OperatorToken)lookahead).OperatorType == OperatorType.Assignment) || lookahead is StatementSeparatorToken) //variable declaration
+                            if (lookahead is OperatorToken)
+                                NextToken(); //skip the "="
+                            _currentScope.AddStatement(new VariableDeclarationNode(varType, name.Content, ExpressionNode.CreateFromTokens(ReadUntilStatementSeparator())));
+                        }
+                        //If in the global scope, it can also be a function declaration
+                        else if (globalScope && lookahead is OpenBraceToken && (((OpenBraceToken)lookahead).BraceType == BraceType.Round)) //function definition
+                        {
+                            var func = new FunctionDeclarationNode(name.Content);
+                            _currentScope.AddStatement(func); //add the function to the old (root) scope...
+                            _scopes.Push(func); //...and set it a the new scope!
+                                                //Read the argument list
+                            NextToken(); //skip the opening brace
+                            while (!(PeekNextToken() is CloseBraceToken && ((CloseBraceToken)PeekNextToken()).BraceType == BraceType.Round)) //TODO: Refactor using readUntilClosingBrace?
                             {
-                                if (lookahead is OperatorToken)
-                                    NextToken(); //skip the "="
-                                _currentScope.AddStatement(new VariableDeclarationNode(varType, name.Content, ExpressionNode.CreateFromTokens(ReadUntilStatementSeparator())));
+                                var argType = ReadNextToken<KeywordToken>();
+                                if (!argType.IsTypeKeyword)
+                                    throw new ParsingException("Expected type keyword!");
+                                var argName = ReadNextToken<IdentifierToken>();
+                                func.AddParameter(new ParameterDeclarationNode(argType.ToVariableType(), argName.Content));
+                                if (PeekNextToken() is ArgSeperatorToken) //TODO: Does this allow (int a int b)-style functions? (No arg-seperator!)
+                                    NextToken(); //skip the sperator
                             }
-                            else if (lookahead is OpenBraceToken && (((OpenBraceToken)lookahead).BraceType == BraceType.Round)) //function definition
-                            {
-                                var func = new FunctionDeclarationNode(name.Content);
-                                _currentScope.AddStatement(func); //add the function to the old (root) scope...
-                                _scopes.Push(func); //...and set it a the new scope!
-                                //Read the argument list
-                                NextToken(); //skip the opening brace
-                                while (!(PeekNextToken() is CloseBraceToken && ((CloseBraceToken)PeekNextToken()).BraceType == BraceType.Round)) //TODO: Refactor using readUntilClosingBrace?
-                                {
-                                    var argType = ReadNextToken<KeywordToken>();
-                                    if (!argType.IsTypeKeyword)
-                                        throw new ParsingException("Expected type keyword!");
-                                    var argName = ReadNextToken<IdentifierToken>();
-                                    func.AddParameter(new ParameterDeclarationNode(argType.ToVariableType(), argName.Content));
-                                    if (PeekNextToken() is ArgSeperatorToken) //TODO: Does this allow (int a int b)-style functions? (No arg-seperator!)
-                                        NextToken(); //skip the sperator
-                                }
-                                NextToken(); //skip the closing brace
-                                var curlyBrace = ReadNextToken<OpenBraceToken>();
-                                if (curlyBrace.BraceType != BraceType.Curly)
-                                    throw new ParsingException("Wrong brace type found!");
-                            }
-                            else
-                                throw new Exception("The parser encountered an unexpected token.");
+                            NextToken(); //skip the closing brace
+                            var curlyBrace = ReadNextToken<OpenBraceToken>();
+                            if (curlyBrace.BraceType != BraceType.Curly)
+                                throw new ParsingException("Wrong brace type found!");
                         }
                         else
-                            throw new ParsingException("Found non-type keyword on top level.");
+                            throw new Exception("The parser encountered an unexpected token.");
+                        //We can't have anything other than what's listed above on the global scope
                     }
-                    else //we are in a nested scope
+                    //Not a type keyword. If on a local scope, it may be other keywords
+                    else if (!globalScope)
                     {
-                        //TODO: Can we avoid the code duplication from above?
-                        if (keyword.IsTypeKeyword) //local variable declaration!
+                        switch (keyword.KeywordType)
                         {
-                            var varType = keyword.ToVariableType();
-                            //it must be followed by a identifier:
-                            var name = ReadNextToken<IdentifierToken>();
-                            //so see what it is (function or variable):
-                            Token lookahead = PeekNextToken();
-                            if (lookahead is OperatorToken && (((OperatorToken)lookahead).OperatorType == OperatorType.Assignment) || lookahead is StatementSeparatorToken) //variable declaration
-                            {
-                                if (lookahead is OperatorToken)
-                                    NextToken(); //skip the "="
-                                _currentScope.AddStatement(new VariableDeclarationNode(varType, name.Content, ExpressionNode.CreateFromTokens(ReadUntilStatementSeparator())));
-                            }
-                        }
-                        else
-                        {
-                            switch (keyword.KeywordType)
-                            {
-                                case KeywordType.Return:
-                                    _currentScope.AddStatement(new ReturnStatementNode(ExpressionNode.CreateFromTokens(ReadUntilStatementSeparator())));
-                                    break;
+                            case KeywordType.Return:
+                                _currentScope.AddStatement(new ReturnStatementNode(ExpressionNode.CreateFromTokens(ReadUntilStatementSeparator())));
+                                break;
 
-                                case KeywordType.If:
-                                    var @if = new IfStatementNode(ExpressionNode.CreateFromTokens(ReadUntilClosingBrace(true)));
-                                    _currentScope.AddStatement(@if); //Add if statement to previous scope
-                                    _scopes.Push(@if); //...and set it a the new scope!
-                                    NextToken(); //skip the opening curly brace
-                                    break;
+                            case KeywordType.If:
+                                var @if = new IfStatementNode(ExpressionNode.CreateFromTokens(ReadUntilClosingBrace(true)));
+                                _currentScope.AddStatement(@if); //Add if statement to previous scope
+                                _scopes.Push(@if); //...and set it a the new scope!
+                                NextToken(); //skip the opening curly brace
+                                break;
 
-                                case KeywordType.While:
-                                    var @while = new WhileLoopNode(ExpressionNode.CreateFromTokens(ReadUntilClosingBrace(true)));
-                                    _currentScope.AddStatement(@while);
-                                    _scopes.Push(@while);
-                                    NextToken(); //skip the opening curly brace
-                                    break;
+                            case KeywordType.While:
+                                var @while = new WhileLoopNode(ExpressionNode.CreateFromTokens(ReadUntilClosingBrace(true)));
+                                _currentScope.AddStatement(@while);
+                                _scopes.Push(@while);
+                                NextToken(); //skip the opening curly brace
+                                break;
 
-                                default:
-                                    throw new ParsingException("Unexpected keyword type.");
-                            }
+                            default:
+                                throw new ParsingException("Unexpected keyword type.");
                         }
                     }
+                    else //It was not a keyword, and it was a global scope
+                        throw new ParsingException("Found non-type keyword on global scope.");
                 }
                 else if (upcomingToken is IdentifierToken && _scopes.Count > 1) //in a nested scope
                 {
@@ -161,7 +143,7 @@ namespace FlameScript.Parsing
                         if (currentTestToken is OperatorToken && ((OperatorToken)currentTestToken).OperatorType == OperatorType.Assignment) //table member assignment
                         {
                             NextToken(); //skip the "="
-                            //Tokens until statement end have to be preloaded as a 'temporary workaround' to allow looking forward
+                                         //Tokens until statement end have to be preloaded as a 'temporary workaround' to allow looking forward
                             var expressionTokens = ReadUntilStatementSeparator().ToList();
                             _currentScope.AddStatement(new TableAssignmentNode(TableQualifier.Create(identifierToken, memberAccessTokens), ExpressionNode.CreateFromTokens(expressionTokens)));
                         }

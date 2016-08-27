@@ -54,7 +54,9 @@
     <Compile Include="Runtime\Interpreter\Exceptions\UnknownNameError.cs" />
     <Compile Include="Runtime\Interpreter\FlameScriptInterpreter.cs" />
     <Compile Include="Runtime\Interpreter\TypeSwitch.cs" />
-    <Compile Include="Runtime\Interpreter\Types\Variable.cs" />
+    <Compile Include="Runtime\Interpreter\Types\Expando.cs" />
+    <Compile Include="Runtime\Interpreter\Types\PropertyBag.cs" />
+    <Compile Include="Runtime\Interpreter\Types\Value.cs" />
     <Compile Include="Runtime\Interpreter\Types\VariableScope.cs" />
     <Compile Include="Types\AstNode.cs" />
     <Compile Include="Types\Ast\BinaryOperationNode.cs" />

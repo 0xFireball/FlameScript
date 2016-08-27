@@ -2,6 +2,7 @@
 using FlameScript.Runtime.Interpreter.Types;
 using FlameScript.Types;
 using FlameScript.Types.Ast;
+using FlameScript.Types.Tokens;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -80,7 +81,12 @@ namespace FlameScript.Runtime.Interpreter
                             GlobalVariables.Add(newVar);
                         else
                             CurrentContextScopeVariables.Add(newVar);
+                        if (variableDeclarationNode.Type == VariableType.Table)
+                        {
+                            newVar.Value = new Expando();
+                        }
                     })
+
                     .Case((FunctionCallExpressionNode functionCallNode) =>
                     {
                         var currentFunction = GetReferencedFunction(functionCallNode);
@@ -112,6 +118,12 @@ namespace FlameScript.Runtime.Interpreter
                             //Condition is true, execute conditional nodes
                             ExecuteNodes(whileLoopNode.SubNodes.ToList());
                         }
+                    })
+                    .Case((TableAssignmentNode tableAssignmentNode) =>
+                    {
+                        var currentVariable = GetReferencedVariable(tableAssignmentNode.TableQualifier.Name);
+                        var combinedQualifiers = string.Join("", tableAssignmentNode.TableQualifier.MemberChain.ToArray()).Skip(1);
+                        currentVariable.Value[combinedQualifiers] = EvaluateExpression(tableAssignmentNode.ValueExpression);
                     })
                     .Case((VariableAssignmentNode variableAssignmentNode) =>
                     {
@@ -195,6 +207,13 @@ namespace FlameScript.Runtime.Interpreter
                 var currentVariable = GetReferencedVariable(variableReference.VariableName);
                 return currentVariable.Value;
             }
+            else if (expressionNode is TableReferenceExpressionNode)
+            {
+                var tableReference = expressionNode as TableReferenceExpressionNode;
+                var currentVariable = GetReferencedVariable(tableReference.TableQualifier.Name);
+                var combinedQualifiers = string.Join("", tableReference.TableQualifier.MemberChain.ToArray()).Skip(1);
+                return currentVariable.Value[combinedQualifiers];
+            }
             else if (expressionNode is FunctionCallExpressionNode)
             {
                 var functionCallExpression = expressionNode as FunctionCallExpressionNode;
@@ -202,6 +221,7 @@ namespace FlameScript.Runtime.Interpreter
                 var functionCallReturn = CreateFunctionCall(functionCallExpression, functionRef);
                 return functionCallReturn.Value;
             }
+
             //Error evaluating expression (should really throw an error or something)
             return null;
         }

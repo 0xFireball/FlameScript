@@ -71,6 +71,9 @@
     <Compile Include="Types\Ast\ReturnStatementNode.cs" />
     <Compile Include="Types\Ast\StatementSequenceNode.cs" />
     <Compile Include="Types\Ast\StringLiteralNode.cs" />
+    <Compile Include="Types\Ast\TableAssignmentNode.cs" />
+    <Compile Include="Types\Ast\TableQualifier.cs" />
+    <Compile Include="Types\Ast\TableReferenceExpressionNode.cs" />
     <Compile Include="Types\Ast\UnaryOperationNode.cs" />
     <Compile Include="Types\Ast\VariableAssignmentNode.cs" />
     <Compile Include="Types\Ast\VariableDeclarationNode.cs" />
@@ -92,6 +95,7 @@
     <Compile Include="Types\Tokens\OperatorType.cs" />
     <Compile Include="Types\Tokens\StatementSeparatorToken.cs" />
     <Compile Include="Types\Tokens\StringLiteralToken.cs" />
+    <Compile Include="Types\Tokens\TableIdentifierToken.cs" />
     <Compile Include="Types\Tokens\VariableType.cs" />
   </ItemGroup>
   <ItemGroup>

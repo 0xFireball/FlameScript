@@ -129,9 +129,31 @@ namespace FlameScript.Parsing
                 }
                 else if (token is IdentifierToken)
                 {
-                    //this could be a function call, but we would need a lookahead to check for an opening brace.
-                    //just handle this as a variable reference and change it to a function when a open brace is found
-                    working.Push(new VariableReferenceExpressionNode(((IdentifierToken)token).Content));
+                    if (token is TableIdentifierToken) //These tokens need special treatment
+                    {
+                        var tokenList = tokens.ToList();
+                        var tokensToSkip = tokenList.IndexOf(token) + 1;
+                        var upcomingTokens = new Stack<Token>(tokenList.Skip(tokensToSkip).Take(tokenList.Count - tokensToSkip).Reverse());
+                        Token currentTestToken;
+                        List<MemberAccessToken> memberAccessTokens = new List<MemberAccessToken>();
+                        while ((currentTestToken = upcomingTokens.Pop()) is MemberAccessToken) //They can be stacked
+                        {
+                            memberAccessTokens.Add(currentTestToken as MemberAccessToken);
+                            if (upcomingTokens.Count == 0)
+                                break; //We're done.
+                        }
+                        working.Push(new TableReferenceExpressionNode(TableQualifier.Create(token as IdentifierToken, memberAccessTokens)));
+                    }
+                    else
+                    {
+                        //this could be a function call, but we would need a lookahead to check for an opening brace.
+                        //just handle this as a variable reference and change it to a function when a open brace is found
+                        working.Push(new VariableReferenceExpressionNode(((IdentifierToken)token).Content));
+                    }
+                }
+                else if (token is MemberAccessToken)
+                {
+                    //Basically ignore these for now, they were handled by the tableidentifiertoken conditional
                 }
                 else if (token is ArgSeperatorToken)
                 {

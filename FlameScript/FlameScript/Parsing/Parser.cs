@@ -15,6 +15,11 @@ namespace FlameScript.Parsing
         private int _readingPosition;
         private Stack<StatementSequenceNode> _scopes;
 
+        /// <summary>
+        /// A quick forwarder to _scopes.Peek()
+        /// </summary>
+        private StatementSequenceNode _currentScope => _scopes.Peek();
+
         private static readonly KeywordType[] typeKeywords = { KeywordType.Number, KeywordType.Void, KeywordType.String };
 
         public Parser(Token[] tokens)
@@ -59,12 +64,12 @@ namespace FlameScript.Parsing
                             {
                                 if (lookahead is OperatorToken)
                                     NextToken(); //skip the "="
-                                _scopes.Peek().AddStatement(new VariableDeclarationNode(varType, name.Content, ExpressionNode.CreateFromTokens(ReadUntilStatementSeparator())));
+                                _currentScope.AddStatement(new VariableDeclarationNode(varType, name.Content, ExpressionNode.CreateFromTokens(ReadUntilStatementSeparator())));
                             }
                             else if (lookahead is OpenBraceToken && (((OpenBraceToken)lookahead).BraceType == BraceType.Round)) //function definition
                             {
                                 var func = new FunctionDeclarationNode(name.Content);
-                                _scopes.Peek().AddStatement(func); //add the function to the old (root) scope...
+                                _currentScope.AddStatement(func); //add the function to the old (root) scope...
                                 _scopes.Push(func); //...and set it a the new scope!
                                 //Read the argument list
                                 NextToken(); //skip the opening brace
@@ -103,7 +108,7 @@ namespace FlameScript.Parsing
                             {
                                 if (lookahead is OperatorToken)
                                     NextToken(); //skip the "="
-                                _scopes.Peek().AddStatement(new VariableDeclarationNode(varType, name.Content, ExpressionNode.CreateFromTokens(ReadUntilStatementSeparator())));
+                                _currentScope.AddStatement(new VariableDeclarationNode(varType, name.Content, ExpressionNode.CreateFromTokens(ReadUntilStatementSeparator())));
                             }
                         }
                         else
@@ -111,19 +116,19 @@ namespace FlameScript.Parsing
                             switch (keyword.KeywordType)
                             {
                                 case KeywordType.Return:
-                                    _scopes.Peek().AddStatement(new ReturnStatementNode(ExpressionNode.CreateFromTokens(ReadUntilStatementSeparator())));
+                                    _currentScope.AddStatement(new ReturnStatementNode(ExpressionNode.CreateFromTokens(ReadUntilStatementSeparator())));
                                     break;
 
                                 case KeywordType.If:
                                     var @if = new IfStatementNode(ExpressionNode.CreateFromTokens(ReadUntilClosingBrace(true)));
-                                    _scopes.Peek().AddStatement(@if); //Add if statement to previous scope
+                                    _currentScope.AddStatement(@if); //Add if statement to previous scope
                                     _scopes.Push(@if); //...and set it a the new scope!
                                     NextToken(); //skip the opening curly brace
                                     break;
 
                                 case KeywordType.While:
                                     var @while = new WhileLoopNode(ExpressionNode.CreateFromTokens(ReadUntilClosingBrace(true)));
-                                    _scopes.Peek().AddStatement(@while);
+                                    _currentScope.AddStatement(@while);
                                     _scopes.Push(@while);
                                     NextToken(); //skip the opening curly brace
                                     break;
@@ -136,16 +141,33 @@ namespace FlameScript.Parsing
                 }
                 else if (upcomingToken is IdentifierToken && _scopes.Count > 1) //in a nested scope
                 {
-                    var identifierName = upcomingToken as IdentifierToken;
+                    var identifierToken = upcomingToken as IdentifierToken;
                     NextToken(); //Step past the identifier token
                     var nextToken = PeekNextToken(); //Read the next token
                     if (nextToken is OperatorToken && ((OperatorToken)nextToken).OperatorType == OperatorType.Assignment) //variable assignment
                     {
                         NextToken(); //skip the "="
-                        _scopes.Peek().AddStatement(new VariableAssignmentNode(identifierName.Content, ExpressionNode.CreateFromTokens(ReadUntilStatementSeparator())));
+                        _currentScope.AddStatement(new VariableAssignmentNode(identifierToken.Content, ExpressionNode.CreateFromTokens(ReadUntilStatementSeparator())));
+                    }
+                    else if (nextToken is MemberAccessToken)
+                    {
+                        List<MemberAccessToken> memberAccessTokens = new List<MemberAccessToken>();
+                        Token currentTestToken;
+                        while ((currentTestToken = PeekNextToken()) is MemberAccessToken) //They can be stacked
+                        {
+                            NextToken(); //Advance
+                            memberAccessTokens.Add(currentTestToken as MemberAccessToken);
+                        }
+                        if (currentTestToken is OperatorToken && ((OperatorToken)currentTestToken).OperatorType == OperatorType.Assignment) //table member assignment
+                        {
+                            NextToken(); //skip the "="
+                            //Tokens until statement end have to be preloaded as a 'temporary workaround' to allow looking forward
+                            var expressionTokens = ReadUntilStatementSeparator().ToList();
+                            _currentScope.AddStatement(new TableAssignmentNode(TableQualifier.Create(identifierToken, memberAccessTokens), ExpressionNode.CreateFromTokens(expressionTokens)));
+                        }
                     }
                     else //lone expression (incl. function calls!)
-                        _scopes.Peek().AddStatement(ExpressionNode.CreateFromTokens(new[] { identifierName }.Concat(ReadUntilStatementSeparator()))); //don't forget the name here!
+                        _currentScope.AddStatement(ExpressionNode.CreateFromTokens(new[] { identifierToken }.Concat(ReadUntilStatementSeparator()))); //don't forget the name here!
                 }
                 else if (upcomingToken is CloseBraceToken)
                 {

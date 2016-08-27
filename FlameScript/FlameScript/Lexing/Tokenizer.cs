@@ -60,6 +60,14 @@ namespace FlameScript.Lexing
                         ReadTokens(builder, CharType.AlphaNumeric);
                         tokens.Add(new MemberAccessToken(builder.ToString()));
                         builder.Clear();
+                        //TODO: Find an alternative method
+                        //Patch the previous token as a TableReferenceToken
+                        var previousToken = tokens[tokens.Count - 2]; //second-to-last element
+                        if (previousToken is IdentifierToken)
+                        {
+                            previousToken = new TableIdentifierToken(previousToken.Content);
+                            tokens[tokens.Count - 2] = previousToken;
+                        }
                         break;
 
                     case CharType.StringDelimiter:

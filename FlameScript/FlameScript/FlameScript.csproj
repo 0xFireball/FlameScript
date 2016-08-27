@@ -85,6 +85,7 @@
     <Compile Include="Types\Tokens\KeywordToken.cs" />
     <Compile Include="Types\Tokens\KeywordType.cs" />
     <Compile Include="Types\Tokens\LiteralToken.cs" />
+    <Compile Include="Types\Tokens\MemberAccessToken.cs" />
     <Compile Include="Types\Tokens\NumberLiteralToken.cs" />
     <Compile Include="Types\Tokens\OpenBraceToken.cs" />
     <Compile Include="Types\Tokens\OperatorToken.cs" />

@@ -55,6 +55,13 @@ namespace FlameScript.Lexing
                         builder.Clear();
                         break;
 
+                    case CharType.MemberAccess: //start of member access
+                        NextCharacter(); //Skip the period
+                        ReadTokens(builder, CharType.AlphaNumeric);
+                        tokens.Add(new MemberAccessToken(builder.ToString()));
+                        builder.Clear();
+                        break;
+
                     case CharType.StringDelimiter:
                         NextCharacter(); //Skip the opening quote
                         ReadTokensUntil(builder, CharType.StringDelimiter);

@@ -8,5 +8,6 @@
         If,
         While,
         String,
+        Table,
     }
 }

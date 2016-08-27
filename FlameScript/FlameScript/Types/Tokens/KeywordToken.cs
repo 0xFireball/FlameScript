@@ -10,6 +10,7 @@ namespace FlameScript.Types.Tokens
             { "if", KeywordType.If },
             { "num", KeywordType.Number },
             { "str", KeywordType.String },
+            { "var", KeywordType.Table },
             { "return", KeywordType.Return },
             { "void", KeywordType.Void },
             { "while", KeywordType.While },
@@ -19,6 +20,7 @@ namespace FlameScript.Types.Tokens
         {
             { KeywordType.Number, VariableType.Number },
             { KeywordType.String, VariableType.String },
+            { KeywordType.Table, VariableType.Table },
             { KeywordType.Void, VariableType.Void },
         };
 

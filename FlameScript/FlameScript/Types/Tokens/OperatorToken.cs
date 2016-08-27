@@ -8,7 +8,7 @@ namespace FlameScript.Types.Tokens
         private static readonly Dictionary<string, OperatorType> validOperators = new Dictionary<string, OperatorType>()
         {
             { "+", OperatorType.Add },
-            { "&&", OperatorType.And },
+            { "&", OperatorType.And },
             { "=", OperatorType.Assignment },
             { "/", OperatorType.Divide },
             { "==", OperatorType.Equals },
@@ -20,8 +20,9 @@ namespace FlameScript.Types.Tokens
             { "*", OperatorType.Multiply },
             { "!", OperatorType.Not },
             { "!=", OperatorType.NotEquals },
-            { "||", OperatorType.Or },
+            { "|", OperatorType.Or },
             { "-", OperatorType.SubstractNegate },
+            { "^", OperatorType.Xor },
         };
 
         public OperatorType OperatorType { get; private set; }

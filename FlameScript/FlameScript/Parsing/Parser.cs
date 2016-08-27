@@ -115,15 +115,17 @@ namespace FlameScript.Parsing
                                     break;
 
                                 case KeywordType.If:
-                                    var @if = new IfStatementNode(ExpressionNode.CreateFromTokens(ReadUntilClosingBrace()));
-                                    _scopes.Peek().AddStatement(@if);
-                                    _scopes.Push(@if);
+                                    var @if = new IfStatementNode(ExpressionNode.CreateFromTokens(ReadUntilClosingBrace(true)));
+                                    _scopes.Peek().AddStatement(@if); //Add if statement to previous scope
+                                    _scopes.Push(@if); //...and set it a the new scope!
+                                    NextToken(); //skip the opening curly brace
                                     break;
 
                                 case KeywordType.While:
-                                    var @while = new WhileLoopNode(ExpressionNode.CreateFromTokens(ReadUntilClosingBrace()));
+                                    var @while = new WhileLoopNode(ExpressionNode.CreateFromTokens(ReadUntilClosingBrace(true)));
                                     _scopes.Peek().AddStatement(@while);
                                     _scopes.Push(@while);
+                                    NextToken(); //skip the opening curly brace
                                     break;
 
                                 default:
@@ -147,17 +149,18 @@ namespace FlameScript.Parsing
                 }
                 else if (upcomingToken is CloseBraceToken)
                 {
+                    //Closing a scope
                     var brace = ReadNextToken<CloseBraceToken>();
                     if (brace.BraceType != BraceType.Curly)
                         throw new ParsingException("Wrong brace type found!");
                     _scopes.Pop(); //Scope has been closed!
                 }
                 else
-                    throw new UnexpectedTokenException("The parser ran into an unexpeted token", upcomingToken);
+                    throw new UnexpectedTokenException("The parser ran into an unexpected token", upcomingToken);
             }
 
             if (_scopes.Count != 1)
-                throw new ParsingException("The _scopes are not correctly nested.");
+                throw new ParsingException("The scopes are not correctly nested.");
 
             return (ProgramNode)_scopes.Pop();
         }
@@ -173,14 +176,16 @@ namespace FlameScript.Parsing
             }
         }
 
-        private IEnumerable<Token> ReadUntilClosingBrace()
+        private IEnumerable<Token> ReadUntilClosingBrace(bool includeClosingBrace = false)
         {
             //TODO: Only allow round braces, handle nested braces!
             while (!EndOfProgram && !(PeekNextToken() is CloseBraceToken))
             {
                 yield return NextToken();
             }
-            NextToken(); //skip the closing brace
+            if (includeClosingBrace)
+                yield return PeekNextToken(); //Include the closing brace
+            NextToken(); //advance after the closing brace
         }
 
         private IEnumerable<Token> ReadUntilStatementSeparator()

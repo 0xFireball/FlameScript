@@ -30,15 +30,16 @@ namespace FlameScript.Parsing
             { ExpressionOperationType.Divide, 5 },
             { ExpressionOperationType.Modulo, 5 },
             { ExpressionOperationType.Add, 6 },
-            { ExpressionOperationType.Substract, 6 },
+            { ExpressionOperationType.Subtract, 6 },
             { ExpressionOperationType.LessThan, 8 },
             { ExpressionOperationType.LessEquals, 8 },
             { ExpressionOperationType.GreaterThan, 8 },
             { ExpressionOperationType.GreaterEquals, 8 },
             { ExpressionOperationType.Equals, 9 },
             { ExpressionOperationType.NotEquals, 9 },
-            { ExpressionOperationType.And, 13 },
-            { ExpressionOperationType.Or, 14 },
+            { ExpressionOperationType.And, 10 },
+            { ExpressionOperationType.Xor, 11 },
+            { ExpressionOperationType.Or, 12 },
             { ExpressionOperationType.Assignment, 16 },
         };
 
@@ -61,6 +62,7 @@ namespace FlameScript.Parsing
             { OperatorType.Not, ExpressionOperationType.Not},
             { OperatorType.And, ExpressionOperationType.And},
             { OperatorType.Or, ExpressionOperationType.Or},
+            { OperatorType.Xor, ExpressionOperationType.Xor},
         };
 
         //used to distigush between unary and binary minus
@@ -88,7 +90,7 @@ namespace FlameScript.Parsing
                 {
                     ExpressionOperationType op;
                     if (((OperatorToken)token).OperatorType == OperatorType.SubstractNegate) //need to check if binary or unary
-                        op = lastTokenWasOperatorOrLeftBrace ? ExpressionOperationType.Negate : ExpressionOperationType.Substract;
+                        op = lastTokenWasOperatorOrLeftBrace ? ExpressionOperationType.Negate : ExpressionOperationType.Subtract;
                     else //normal operator
                         op = operatorToOperation[((OperatorToken)token).OperatorType];
 

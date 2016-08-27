@@ -189,6 +189,26 @@ namespace FlameScript.Runtime.Interpreter
             return null;
         }
 
+        private bool EvaluateToBoolean(dynamic value)
+        {
+            if (value == null)
+                return false;
+
+            if (value is bool)
+                return value;
+
+            if (value is string)
+                return true;
+
+            if (value is double)
+                return value > 0;
+
+            if (value is object)
+                return true;
+
+            return false;
+        }
+
         private dynamic DoBinaryOperation(BinaryOperationNode expressionOperation)
         {
             //TODO: Implement all of them
@@ -197,8 +217,8 @@ namespace FlameScript.Runtime.Interpreter
                 case ExpressionOperationType.Add:
                     return EvaluateExpression(expressionOperation.OperandA) + EvaluateExpression(expressionOperation.OperandB);
 
-                case ExpressionOperationType.Multiply:
-                    return EvaluateExpression(expressionOperation.OperandA) * EvaluateExpression(expressionOperation.OperandB);
+                case ExpressionOperationType.And:
+                    return EvaluateToBoolean(EvaluateExpression(expressionOperation.OperandA)) && EvaluateToBoolean(EvaluateExpression(expressionOperation.OperandB));
 
                 case ExpressionOperationType.Assignment:
                     var evaluatedValue = EvaluateExpression(expressionOperation.OperandB);
@@ -206,6 +226,55 @@ namespace FlameScript.Runtime.Interpreter
                     var targetVariable = GetReferencedVariable(targetVariableReferenceNode.VariableName);
                     targetVariable.Value = evaluatedValue;
                     break;
+
+                case ExpressionOperationType.Divide:
+                    return null;
+
+                case ExpressionOperationType.Equals:
+                    return EvaluateExpression(expressionOperation.OperandA) == EvaluateExpression(expressionOperation.OperandB) ? 1 : 0;
+
+                case ExpressionOperationType.FunctionCall:
+                    return null;
+
+                case ExpressionOperationType.GreaterEquals:
+                    return null;
+
+                case ExpressionOperationType.GreaterThan:
+                    return EvaluateExpression(expressionOperation.OperandA) == EvaluateExpression(expressionOperation.OperandB) ? 1 : 0;
+
+                case ExpressionOperationType.LessEquals:
+                    return null;
+
+                case ExpressionOperationType.LessThan:
+                    return null;
+
+                case ExpressionOperationType.Modulo:
+                    return null;
+
+                case ExpressionOperationType.Multiply:
+                    return EvaluateExpression(expressionOperation.OperandA) * EvaluateExpression(expressionOperation.OperandB);
+
+                case ExpressionOperationType.Negate:
+                    return null;
+
+                case ExpressionOperationType.Not:
+                    return null;
+
+                case ExpressionOperationType.NotEquals:
+                    return EvaluateExpression(expressionOperation.OperandA) != EvaluateExpression(expressionOperation.OperandB) ? 1 : 0;
+
+                case ExpressionOperationType.OpenBrace:
+                    return null;
+
+                case ExpressionOperationType.Or:
+                    return EvaluateToBoolean(EvaluateExpression(expressionOperation.OperandA)) || EvaluateToBoolean(EvaluateExpression(expressionOperation.OperandB));
+
+                case ExpressionOperationType.Subtract:
+                    return null;
+
+                case ExpressionOperationType.Xor:
+                    return EvaluateToBoolean(EvaluateExpression(expressionOperation.OperandA)) ^ EvaluateToBoolean(EvaluateExpression(expressionOperation.OperandB));
+
                     //TODO: Implement the rest of them
             }
             //Error doing operation (should really throw an error or something)

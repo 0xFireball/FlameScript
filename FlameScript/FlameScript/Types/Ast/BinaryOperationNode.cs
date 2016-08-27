@@ -12,7 +12,7 @@ namespace FlameScript.Types.Ast
         private static readonly ExpressionOperationType[] validOperators =
         {
             ExpressionOperationType.Add,
-            ExpressionOperationType.Substract,
+            ExpressionOperationType.Subtract,
             ExpressionOperationType.Multiply,
             ExpressionOperationType.Divide,
             ExpressionOperationType.Modulo,

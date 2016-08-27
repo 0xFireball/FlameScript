@@ -6,7 +6,7 @@
     public enum ExpressionOperationType
     {
         Add,
-        Substract,
+        Subtract,
         Multiply,
         Divide,
         Modulo,
@@ -23,5 +23,6 @@
         Negate,
         FunctionCall,
         OpenBrace,
+        Xor,
     }
 }

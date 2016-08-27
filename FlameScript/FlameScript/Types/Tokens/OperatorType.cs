@@ -17,5 +17,6 @@
         Not,
         And,
         Or,
+        Xor,
     }
 }

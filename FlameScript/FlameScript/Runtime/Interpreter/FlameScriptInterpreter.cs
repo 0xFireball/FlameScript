@@ -122,8 +122,13 @@ namespace FlameScript.Runtime.Interpreter
                     .Case((TableAssignmentNode tableAssignmentNode) =>
                     {
                         var currentVariable = GetReferencedVariable(tableAssignmentNode.TableQualifier.Name);
-                        var combinedQualifiers = string.Join("", tableAssignmentNode.TableQualifier.MemberChain.ToArray()).Skip(1);
-                        currentVariable.Value[combinedQualifiers] = EvaluateExpression(tableAssignmentNode.ValueExpression);
+                        dynamic intermediateMember = currentVariable.Value;
+                        //TODO: Find a better way to assign to tables
+                        foreach (var member in tableAssignmentNode.TableQualifier.MemberChain)
+                        {
+                            intermediateMember = intermediateMember[member];
+                        }
+                        intermediateMember = EvaluateExpression(tableAssignmentNode.ValueExpression);
                     })
                     .Case((VariableAssignmentNode variableAssignmentNode) =>
                     {
@@ -211,8 +216,12 @@ namespace FlameScript.Runtime.Interpreter
             {
                 var tableReference = expressionNode as TableReferenceExpressionNode;
                 var currentVariable = GetReferencedVariable(tableReference.TableQualifier.Name);
-                var combinedQualifiers = string.Join("", tableReference.TableQualifier.MemberChain.ToArray()).Skip(1);
-                return currentVariable.Value[combinedQualifiers];
+                dynamic intermediateMember = currentVariable.Value;
+                foreach (var member in tableReference.TableQualifier.MemberChain)
+                {
+                    intermediateMember = intermediateMember[member];
+                }
+                return intermediateMember;
             }
             else if (expressionNode is FunctionCallExpressionNode)
             {

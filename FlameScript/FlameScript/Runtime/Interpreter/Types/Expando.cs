@@ -286,7 +286,8 @@ namespace FlameScript.Runtime.Interpreter.Types
                         return result;
 
                     // nope doesn't exist
-                    throw;
+                    //throw; //Don't throw return null
+                    return null;
                 }
             }
             set

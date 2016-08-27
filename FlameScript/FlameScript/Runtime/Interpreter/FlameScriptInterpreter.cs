@@ -122,13 +122,18 @@ namespace FlameScript.Runtime.Interpreter
                     .Case((TableAssignmentNode tableAssignmentNode) =>
                     {
                         var currentVariable = GetReferencedVariable(tableAssignmentNode.TableQualifier.Name);
+                        // Take off the last member
+                        var memberChainList = tableAssignmentNode.TableQualifier.MemberChain.ToList();
+                        var lastMemberInChain = memberChainList.Last();
+                        memberChainList.Remove(lastMemberInChain);
                         dynamic intermediateMember = currentVariable.Value;
-                        //TODO: Find a better way to assign to tables
-                        foreach (var member in tableAssignmentNode.TableQualifier.MemberChain)
+                        //Take all except the last
+                        var remainingMembers = memberChainList;
+                        foreach (var member in remainingMembers)
                         {
                             intermediateMember = intermediateMember[member];
                         }
-                        intermediateMember = EvaluateExpression(tableAssignmentNode.ValueExpression);
+                        intermediateMember[lastMemberInChain] = EvaluateExpression(tableAssignmentNode.ValueExpression);
                     })
                     .Case((VariableAssignmentNode variableAssignmentNode) =>
                     {

@@ -11,11 +11,11 @@ namespace FlameScript.Runtime.Interpreter
     {
         public ProgramNode SyntaxTree;
 
-        public List<FunctionDeclarationNode> Methods;
+        public List<FunctionDeclarationNode> Functions;
         public List<Variable> GlobalVariables;
 
-        private Stack<List<Variable>> MethodScopeVariables;
-        private List<Variable> CurrentContextScopeVariables => MethodScopeVariables.Peek();
+        private Stack<List<Variable>> FunctionScopeVariables;
+        private List<Variable> CurrentContextScopeVariables => FunctionScopeVariables.Peek();
         private List<Variable> CurrentVariablesInScope => GetCurrentVariablesInScope();
 
         private VariableScope CurrentVariableScope { get; set; }
@@ -33,44 +33,44 @@ namespace FlameScript.Runtime.Interpreter
             SyntaxTree = syntaxTree;
 
             GlobalVariables = new List<Variable>();
-            Methods = new List<FunctionDeclarationNode>();
+            Functions = new List<FunctionDeclarationNode>();
 
-            MethodScopeVariables = new Stack<List<Variable>>();
-            MethodScopeVariables.Push(new List<Variable>()); //Buffer layer
+            FunctionScopeVariables = new Stack<List<Variable>>();
+            FunctionScopeVariables.Push(new List<Variable>()); //Buffer layer
         }
 
         public void ExecuteProgram()
         {
-            //Build method table
+            //Build function table
 
-            Methods.AddRange(SyntaxTree.SubNodes.Where(subNode => subNode is FunctionDeclarationNode).Cast<FunctionDeclarationNode>());
+            Functions.AddRange(SyntaxTree.SubNodes.Where(subNode => subNode is FunctionDeclarationNode).Cast<FunctionDeclarationNode>());
             //TODO: Throw errors on duplicates, etc.
 
             //Get the entry point of the program
-            var entryPointMethodCandidates = Methods.Where(function => function.FunctionName == "main").ToList();
+            var entryPointFunctionCandidates = Functions.Where(function => function.FunctionName == "main").ToList();
 
-            if (entryPointMethodCandidates.Count == 0)
-                throw new InterpreterRuntimeException("No entry point method could be found.");
-            var entryPointMethod = entryPointMethodCandidates[0];
+            if (entryPointFunctionCandidates.Count == 0)
+                throw new InterpreterRuntimeException("No entry point function could be found.");
+            var entryPointFunction = entryPointFunctionCandidates[0];
 
             //Begin execution on global scope
-            var nonMethodDeclarationNodes = SyntaxTree.SubNodes.Except(Methods).ToList();
+            var nonFunctionDeclarationNodes = SyntaxTree.SubNodes.Except(Functions).ToList();
 
-            //TODO: Execute all non-method declaration nodes on the global scope
+            //TODO: Execute all non-function declaration nodes on the global scope
             CurrentVariableScope = VariableScope.Global;
-            ExecuteNodes(nonMethodDeclarationNodes);
+            ExecuteNodes(nonFunctionDeclarationNodes);
 
             //TODO: Begin normal execution at the entry point
             CurrentVariableScope = VariableScope.Local;
 
-            //Create variable scope for main() method
+            //Create variable scope for main() function
 
-            ExecuteNodes(entryPointMethod.SubNodes.ToList());
+            ExecuteNodes(entryPointFunction.SubNodes.ToList());
         }
 
-        private void ExecuteNodes(List<AstNode> nonMethodDeclarationNodes)
+        private void ExecuteNodes(List<AstNode> nonFunctionDeclarationNodes)
         {
-            foreach (var nodeToExecute in nonMethodDeclarationNodes)
+            foreach (var nodeToExecute in nonFunctionDeclarationNodes)
             {
                 TypeSwitch.On(nodeToExecute)
                     .Case((VariableDeclarationNode variableDeclarationNode) =>
@@ -83,18 +83,35 @@ namespace FlameScript.Runtime.Interpreter
                     })
                     .Case((FunctionCallExpressionNode functionCallNode) =>
                     {
-                        var currentMethod = GetReferencedMethod(functionCallNode);
+                        var currentFunction = GetReferencedFunction(functionCallNode);
                         //This will be a call without regard to return type
-                        CreateMethodCall(functionCallNode, currentMethod);
+                        CreateFunctionCall(functionCallNode, currentFunction);
                     })
                     .Case((ReturnStatementNode returnStatementNode) =>
                     {
-                        //If there is a return statement, we're obviously in a method scope
+                        //If there is a return statement, we're obviously in a function scope
                         CurrentContextScopeVariables.Add(new Variable { Name = "$return", Value = EvaluateExpression(returnStatementNode.ValueExpression) ?? null });
                     })
                     .Case((BinaryOperationNode binaryOperationNode) =>
                     {
                         DoBinaryOperation(binaryOperationNode);
+                    })
+                    .Case((IfStatementNode ifStatementNode) =>
+                    {
+                        //This only runs if the condition is true
+                        if (EvaluateToBoolean(EvaluateExpression(ifStatementNode.Condition)))
+                        {
+                            //Condition is true, execute conditional nodes
+                            ExecuteNodes(ifStatementNode.SubNodes.ToList());
+                        }
+                    })
+                    .Case((WhileLoopNode whileLoopNode) =>
+                    {
+                        while (EvaluateToBoolean(EvaluateExpression(whileLoopNode.Condition)))
+                        {
+                            //Condition is true, execute conditional nodes
+                            ExecuteNodes(whileLoopNode.SubNodes.ToList());
+                        }
                     })
                     .Case((VariableAssignmentNode variableAssignmentNode) =>
                     {
@@ -118,30 +135,30 @@ namespace FlameScript.Runtime.Interpreter
             }
         }
 
-        private FunctionDeclarationNode GetReferencedMethod(FunctionCallExpressionNode functionCallNode)
+        private FunctionDeclarationNode GetReferencedFunction(FunctionCallExpressionNode functionCallNode)
         {
-            var matchedMethods = Methods.Where(method => method.FunctionName == functionCallNode.FunctionName).ToList();
-            if (matchedMethods.Count == 1)
+            var matchedFunctions = Functions.Where(function => function.FunctionName == functionCallNode.FunctionName).ToList();
+            if (matchedFunctions.Count == 1)
             {
-                var currentMethod = matchedMethods[0];
-                return currentMethod;
+                var currentFunction = matchedFunctions[0];
+                return currentFunction;
             }
             else
             {
-                throw new UnknownNameError("No method with the given name exists.", functionCallNode.FunctionName);
+                throw new UnknownNameError("No function with the given name exists.", functionCallNode.FunctionName);
             }
         }
 
-        private Variable CreateMethodCall(FunctionCallExpressionNode functionCallNode, FunctionDeclarationNode currentMethod)
+        private Variable CreateFunctionCall(FunctionCallExpressionNode functionCallNode, FunctionDeclarationNode currentFunction)
         {
-            //Create method scope variables
-            var methodArgumentVariables = new List<Variable>();
+            //Create function scope variables
+            var functionArgumentVariables = new List<Variable>();
 
-            var methodCallArguments = functionCallNode.Arguments.ToList();
-            var methodSigArguments = currentMethod.Parameters.ToList();
+            var functionCallArguments = functionCallNode.Arguments.ToList();
+            var functionSigArguments = currentFunction.Parameters.ToList();
 
             //Create
-            var createdArgumentVariables = methodSigArguments.Zip(methodCallArguments, (sigArg, callArg) =>
+            var createdArgumentVariables = functionSigArguments.Zip(functionCallArguments, (sigArg, callArg) =>
             {
                 var outputVariable = new Variable
                 {
@@ -151,12 +168,12 @@ namespace FlameScript.Runtime.Interpreter
                 return outputVariable;
             });
 
-            methodArgumentVariables.AddRange(createdArgumentVariables);
+            functionArgumentVariables.AddRange(createdArgumentVariables);
 
-            MethodScopeVariables.Push(methodArgumentVariables);
-            ExecuteNodes(currentMethod.SubNodes.ToList());
+            FunctionScopeVariables.Push(functionArgumentVariables);
+            ExecuteNodes(currentFunction.SubNodes.ToList());
             var returnedVariable = CurrentContextScopeVariables.Where(variable => variable.Name == "$return").ToList()[0];
-            MethodScopeVariables.Pop();
+            FunctionScopeVariables.Pop();
             return returnedVariable;
         }
 
@@ -181,9 +198,9 @@ namespace FlameScript.Runtime.Interpreter
             else if (expressionNode is FunctionCallExpressionNode)
             {
                 var functionCallExpression = expressionNode as FunctionCallExpressionNode;
-                var methodRef = GetReferencedMethod(functionCallExpression);
-                var methodCallReturn = CreateMethodCall(functionCallExpression, methodRef);
-                return methodCallReturn.Value;
+                var functionRef = GetReferencedFunction(functionCallExpression);
+                var functionCallReturn = CreateFunctionCall(functionCallExpression, functionRef);
+                return functionCallReturn.Value;
             }
             //Error evaluating expression (should really throw an error or something)
             return null;

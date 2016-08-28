@@ -63,6 +63,7 @@
     <Compile Include="Types\Ast\BinaryOperationNode.cs" />
     <Compile Include="Types\Ast\ExpressionNode.cs" />
     <Compile Include="Types\Ast\ExpressionOperationType.cs" />
+    <Compile Include="Types\Ast\FunctionBodyType.cs" />
     <Compile Include="Types\Ast\FunctionCallExpressionNode.cs" />
     <Compile Include="Types\Ast\FunctionDeclarationNode.cs" />
     <Compile Include="Types\Ast\IfStatementNode.cs" />

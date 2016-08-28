@@ -207,11 +207,13 @@ namespace FlameScript.Parsing
                 }
                 else if (token is ArgSeperatorToken)
                 {
+                    /*
                     if (arity.Peek() == 0) //If it was previously assumed that there were no args
                     {
                         arity.Pop(); //There are at least
                         arity.Push(1); //One argument (at least)
                     }
+                    */
                     arity.Push(arity.Pop() + 1); //increase arity on top of the stack
 
                     if (operators.Count > 0)

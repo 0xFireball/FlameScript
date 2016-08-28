@@ -30,6 +30,34 @@ namespace FlameScript.Runtime.Interpreter
                 return GlobalVariables;
         }
 
+        public void DefineFunction(string functionName, Delegate functionReference)
+        {
+            var metaFunction = new FunctionDeclarationNode(functionName);
+            var parameters = functionReference.Method.GetParameters();
+            foreach (var parameter in parameters)
+            {
+                var nativeParameterType = GetNativeType(parameter.ParameterType);
+                metaFunction.AddParameter(new ParameterDeclarationNode(nativeParameterType, parameter.Name));
+            }
+            metaFunction.BodyType = FunctionBodyType.Native;
+            metaFunction.NativeBody = functionReference;
+            Functions.Add(metaFunction);
+        }
+
+        private VariableType GetNativeType(Type type)
+        {
+            if (type == typeof(string))
+            {
+                return VariableType.String;
+            }
+            if (type == typeof(double))
+            {
+                return VariableType.Number;
+            }
+
+            return VariableType.Table;
+        }
+
         public FlameScriptInterpreter(ProgramNode syntaxTree)
         {
             SyntaxTree = syntaxTree;
@@ -103,7 +131,7 @@ namespace FlameScript.Runtime.Interpreter
                         }
                         var methodToInvoke = intermediateMember[lastMemberInChain];
                         //TODO: Invoke method with dynamic parameters
-
+                        var methodInfo = intermediateMember.GetType().GetMethod(methodToInvoke);
                     })
                     .Case((FunctionCallExpressionNode functionCallNode) =>
                     {
@@ -211,10 +239,26 @@ namespace FlameScript.Runtime.Interpreter
             functionArgumentVariables.AddRange(createdArgumentVariables);
 
             FunctionScopeVariables.Push(functionArgumentVariables);
-            ExecuteNodes(currentFunction.SubNodes.ToList());
+
+            if (currentFunction.BodyType == FunctionBodyType.FlameScript)
+            {
+                ExecuteNodes(currentFunction.SubNodes.ToList());
+            }
+            else if (currentFunction.BodyType == FunctionBodyType.Native)
+            {
+                InvokeNativeFunction(currentFunction);
+            }
+
             var returnedVariable = CurrentContextScopeVariables.Where(variable => variable.Name == "$return").ToList()[0];
             FunctionScopeVariables.Pop();
             return returnedVariable;
+        }
+
+        private void InvokeNativeFunction(FunctionDeclarationNode currentFunction)
+        {
+            var nativeArguments = CurrentContextScopeVariables.Select(variable => variable.Value).ToArray();
+            currentFunction.NativeBody.DynamicInvoke(nativeArguments);
+            CurrentContextScopeVariables.Add(new Variable { Name = "$return", Value = 0 });
         }
 
         private dynamic EvaluateExpression(ExpressionNode expressionNode)
@@ -222,6 +266,11 @@ namespace FlameScript.Runtime.Interpreter
             if (expressionNode is NumberLiteralNode) //Easy, it's a number
             {
                 var expressionResult = expressionNode as NumberLiteralNode;
+                return expressionResult.Value;
+            }
+            if (expressionNode is StringLiteralNode) //Easy, it's a string
+            {
+                var expressionResult = expressionNode as StringLiteralNode;
                 return expressionResult.Value;
             }
             else if (expressionNode is BinaryOperationNode)

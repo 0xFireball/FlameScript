@@ -2,6 +2,7 @@
 using FlameScript.Types.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -36,7 +37,7 @@ namespace FlameScript.Lexing
             var tokens = new List<Token>();
             var builder = new StringBuilder();
 
-            Code = StripComments(Code);
+            Code = StripCommentsAndNormalizeNewlines(Code);
 
             while (!EndOfCode)
             {
@@ -116,22 +117,31 @@ namespace FlameScript.Lexing
         }
 
         /// <summary>
-        /// A method that strips comments from the source. Thank you http://stackoverflow.com/questions/3524317/regex-to-strip-line-comments-from-c-sharp/3524689#3524689
+        /// A method that strips comments from the source and normalizes newlines to LF. Thank you http://stackoverflow.com/questions/3524317/regex-to-strip-line-comments-from-c-sharp/3524689#3524689 for the regex patterns.
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        private string StripComments(string input)
+        private string StripCommentsAndNormalizeNewlines(string input)
         {
             var blockComments = @"/\*(.*?)\*/";
             var lineComments = @"//(.*?)\r?\n";
             var strings = @"""((\\[^\n]|[^""\n])*)""";
             var verbatimStrings = @"@(""[^""]*"")+";
+            input = input.Replace("\r\n", "\n"); //Convert CRLF to LF
             return Regex.Replace(input,
                 blockComments + "|" + lineComments + "|" + strings + "|" + verbatimStrings,
                 me =>
                 {
                     if (me.Value.StartsWith("/*", StringComparison.InvariantCulture) || me.Value.StartsWith("//", StringComparison.InvariantCulture))
-                        return me.Value.StartsWith("//", StringComparison.InvariantCulture) ? Environment.NewLine : "";
+                    {
+                        /*
+                        var retVal = me.Value.StartsWith("//", StringComparison.InvariantCulture) ? Environment.NewLine : "";
+                        return retVal;
+                        */
+                        var retVal = string.Concat(Enumerable.Repeat('\n', me.Value.Count(ch => ch == '\n')));
+                        return retVal;
+                    }
+
                     // Keep the literal strings
                     return me.Value;
                 },

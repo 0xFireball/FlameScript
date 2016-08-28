@@ -29,6 +29,7 @@ namespace FlameScript.CLI
 
             //Create an interpreter and run the code
             var interpreter = new FlameScriptInterpreter(ast);
+            interpreter.DefineFunction("print", new Action<string>(Console.WriteLine));
             interpreter.ExecuteProgram();
         }
     }

@@ -3,6 +3,7 @@ using FlameScript.Runtime.Interpreter.Types;
 using FlameScript.Types;
 using FlameScript.Types.Ast;
 using FlameScript.Types.Tokens;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -86,7 +87,6 @@ namespace FlameScript.Runtime.Interpreter
                             newVar.Value = new Expando();
                         }
                     })
-
                     .Case((FunctionCallExpressionNode functionCallNode) =>
                     {
                         var currentFunction = GetReferencedFunction(functionCallNode);
@@ -216,6 +216,18 @@ namespace FlameScript.Runtime.Interpreter
                 var variableReference = expressionNode as VariableReferenceExpressionNode;
                 var currentVariable = GetReferencedVariable(variableReference.VariableName);
                 return currentVariable.Value;
+            }
+            else if (expressionNode is ListInitializerExpressionNode)
+            {
+                var listInitializer = expressionNode as ListInitializerExpressionNode;
+                return listInitializer.Elements.ToList(); //Return as List instead of IEnumerable because it's easier to access by index
+            }
+            else if (expressionNode is ListAccessorExpressionNode)
+            {
+                var listAccessor = expressionNode as ListAccessorExpressionNode;
+                var currentVariable = GetReferencedVariable(listAccessor.ListVariableName);
+                var accessorIndex = (int)Math.Truncate((double)EvaluateExpression(listAccessor.AccessorIndex)); //Turn the number into an integer for accessing
+                return currentVariable.Value[accessorIndex];
             }
             else if (expressionNode is TableReferenceExpressionNode)
             {

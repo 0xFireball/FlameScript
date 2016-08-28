@@ -65,6 +65,7 @@
     <Compile Include="Types\Ast\FunctionCallExpressionNode.cs" />
     <Compile Include="Types\Ast\FunctionDeclarationNode.cs" />
     <Compile Include="Types\Ast\IfStatementNode.cs" />
+    <Compile Include="Types\Ast\ListDeclarationNode.cs" />
     <Compile Include="Types\Ast\LiteralNode.cs" />
     <Compile Include="Types\Ast\LoopStatementNode.cs" />
     <Compile Include="Types\Ast\NumberLiteralNode.cs" />

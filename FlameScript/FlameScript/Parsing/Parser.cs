@@ -50,7 +50,7 @@ namespace FlameScript.Parsing
                 if (upcomingToken is KeywordToken)
                 {
                     var keyword = (KeywordToken)NextToken();
-                    var globalScope = _scopes.Count == 1;
+                    var globalScope = _scopes.Count == 1; // There are constraints to what is available on the global scope
                     if (keyword.IsTypeKeyword)
                     {
                         var varType = keyword.ToVariableType();
@@ -64,28 +64,46 @@ namespace FlameScript.Parsing
                                 NextToken(); //skip the "="
                             _currentScope.AddStatement(new VariableDeclarationNode(varType, name.Content, ExpressionNode.CreateFromTokens(ReadUntilStatementSeparator())));
                         }
-                        //If in the global scope, it can also be a function declaration
-                        else if (globalScope && lookahead is OpenBraceToken && (((OpenBraceToken)lookahead).BraceType == BraceType.Round)) //function definition
+                        else if (lookahead is OpenBraceToken)
                         {
-                            var func = new FunctionDeclarationNode(name.Content);
-                            _currentScope.AddStatement(func); //add the function to the old (root) scope...
-                            _scopes.Push(func); //...and set it a the new scope!
-                                                //Read the argument list
-                            NextToken(); //skip the opening brace
-                            while (!(PeekNextToken() is CloseBraceToken && ((CloseBraceToken)PeekNextToken()).BraceType == BraceType.Round)) //TODO: Refactor using readUntilClosingBrace?
+                            var lookaheadOpenBrace = lookahead as OpenBraceToken;
+                            if (lookaheadOpenBrace.BraceType == BraceType.Square) //It is a list type declaration
                             {
-                                var argType = ReadNextToken<KeywordToken>();
-                                if (!argType.IsTypeKeyword)
-                                    throw new ParsingException("Expected type keyword!");
-                                var argName = ReadNextToken<IdentifierToken>();
-                                func.AddParameter(new ParameterDeclarationNode(argType.ToVariableType(), argName.Content));
-                                if (PeekNextToken() is ArgSeperatorToken) //TODO: Does this allow (int a int b)-style functions? (No arg-seperator!)
-                                    NextToken(); //skip the sperator
+                                //Ensure that the next token is the close square brace
+                                NextToken(); //Go past the opening token
+                                var secondLookahead = PeekNextToken();
+                                if (secondLookahead is CloseBraceToken && ((CloseBraceToken)secondLookahead).BraceType == BraceType.Square)
+                                {
+                                    NextToken(); //Good, it matched, now skip that too
+                                    //Add a list declaration node
+                                    _currentScope.AddStatement(new ListDeclarationNode(varType, name.Content, ExpressionNode.CreateFromTokens(ReadUntilStatementSeparator())));
+                                }
+                                else
+                                    throw new UnexpectedTokenException("Missing close square bracket in array declaration");
                             }
-                            NextToken(); //skip the closing brace
-                            var curlyBrace = ReadNextToken<OpenBraceToken>();
-                            if (curlyBrace.BraceType != BraceType.Curly)
-                                throw new ParsingException("Wrong brace type found!");
+                            //If in the global scope, it can also be a function declaration
+                            else if (globalScope && lookaheadOpenBrace.BraceType == BraceType.Round) //function definition
+                            {
+                                var func = new FunctionDeclarationNode(name.Content);
+                                _currentScope.AddStatement(func); //add the function to the old (root) scope...
+                                _scopes.Push(func); //...and set it a the new scope!
+                                                    //Read the argument list
+                                NextToken(); //skip the opening brace
+                                while (!(PeekNextToken() is CloseBraceToken && ((CloseBraceToken)PeekNextToken()).BraceType == BraceType.Round)) //TODO: Refactor using readUntilClosingBrace?
+                                {
+                                    var argType = ReadNextToken<KeywordToken>();
+                                    if (!argType.IsTypeKeyword)
+                                        throw new ParsingException("Expected type keyword!");
+                                    var argName = ReadNextToken<IdentifierToken>();
+                                    func.AddParameter(new ParameterDeclarationNode(argType.ToVariableType(), argName.Content));
+                                    if (PeekNextToken() is ArgSeperatorToken) //TODO: Does this allow (int a int b)-style functions? (No arg-seperator!)
+                                        NextToken(); //skip the sperator
+                                }
+                                NextToken(); //skip the closing brace
+                                var curlyBrace = ReadNextToken<OpenBraceToken>();
+                                if (curlyBrace.BraceType != BraceType.Curly)
+                                    throw new ParsingException("Wrong brace type found!");
+                            }
                         }
                         else
                             throw new Exception("The parser encountered an unexpected token.");

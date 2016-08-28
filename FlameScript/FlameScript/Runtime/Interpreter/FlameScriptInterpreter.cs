@@ -220,7 +220,7 @@ namespace FlameScript.Runtime.Interpreter
             else if (expressionNode is ListInitializerExpressionNode)
             {
                 var listInitializer = expressionNode as ListInitializerExpressionNode;
-                return listInitializer.Elements.ToList(); //Return as List instead of IEnumerable because it's easier to access by index
+                return listInitializer.Elements.Select(listElementExpression=>EvaluateExpression(listElementExpression)).ToList(); //Return as List instead of IEnumerable because it's easier to access by index
             }
             else if (expressionNode is ListAccessorExpressionNode)
             {

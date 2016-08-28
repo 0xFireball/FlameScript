@@ -165,6 +165,13 @@ namespace FlameScript.Parsing
                             var expressionTokens = ReadUntilStatementSeparator().ToList();
                             _currentScope.AddStatement(new TableAssignmentNode(TableQualifier.Create(identifierToken, memberAccessTokens), ExpressionNode.CreateFromTokens(expressionTokens)));
                         }
+                        else if (currentTestToken is OpenBraceToken && ((OpenBraceToken)currentTestToken).BraceType == BraceType.Round)
+                        {
+                            //Member invocation
+                            var fakeIdentifierToken = new IdentifierToken(identifierToken.Content); //So it will be parsed as a function call
+                            var memberInvocationInternalFunctionCall = ExpressionNode.CreateFromTokens(new[] { fakeIdentifierToken }.Concat(ReadUntilStatementSeparator())) as FunctionCallExpressionNode;
+                            _currentScope.AddStatement(new TableMemberInvocationNode(TableQualifier.Create(identifierToken, memberAccessTokens), memberInvocationInternalFunctionCall.Arguments));
+                        }
                     }
                     else //lone expression (incl. function calls!)
                         _currentScope.AddStatement(ExpressionNode.CreateFromTokens(new[] { identifierToken }.Concat(ReadUntilStatementSeparator()))); //don't forget the name here!

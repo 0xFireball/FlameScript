@@ -71,6 +71,7 @@
     <Compile Include="Types\Ast\ListInitializerExpressionNode.cs" />
     <Compile Include="Types\Ast\LiteralNode.cs" />
     <Compile Include="Types\Ast\LoopStatementNode.cs" />
+    <Compile Include="Types\Ast\TableMemberInvocationNode.cs" />
     <Compile Include="Types\Ast\NumberLiteralNode.cs" />
     <Compile Include="Types\Ast\ParameterDeclarationNode.cs" />
     <Compile Include="Types\Ast\ProgramNode.cs" />

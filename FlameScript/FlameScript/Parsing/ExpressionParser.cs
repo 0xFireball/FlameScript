@@ -116,7 +116,7 @@ namespace FlameScript.Parsing
                             var variable = (VariableReferenceExpressionNode)working.Pop();
                             working.Push(new FunctionCallExpressionNode(variable.VariableName));
                             operators.Push(ExpressionOperationType.FunctionCall);
-                            arity.Push(1);
+                            arity.Push(0);
                         }
                         operators.Push(ExpressionOperationType.OpenRoundBrace);
                     }
@@ -207,6 +207,11 @@ namespace FlameScript.Parsing
                 }
                 else if (token is ArgSeperatorToken)
                 {
+                    if (arity.Peek() == 0) //If it was previously assumed that there were no args
+                    {
+                        arity.Pop(); //There are at least
+                        arity.Push(1); //One argument (at least)
+                    }
                     arity.Push(arity.Pop() + 1); //increase arity on top of the stack
 
                     if (operators.Count > 0)
@@ -221,7 +226,7 @@ namespace FlameScript.Parsing
                     }
                 }
                 else
-                    throw new ParsingException("Found unknown token while parsing expression!");
+                    throw new UnexpectedTokenException("Found unknown token while parsing expression!", token);
             }
 
             if (sequenceWasEmpty)
@@ -248,6 +253,7 @@ namespace FlameScript.Parsing
                 int functionArity = arity.Pop();
                 for (int i = 0; i < functionArity; i++)
                     args.Add(working.Pop());
+                args.Reverse(); //Reverse the args to get back the order they were put on the stack
                 //add them to the function call sitting on top of the stack
                 ((FunctionCallExpressionNode)working.Peek()).AddArguments(args);
             }

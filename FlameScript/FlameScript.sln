@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlameScript", "FlameScript\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlameScript.CLI", "FlameScript.CLI\FlameScript.CLI.csproj", "{B8B7A058-9AA0-44E8-B744-7C949406E7CD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HappyPenguinVM", "HappyPenguinVM\HappyPenguinVM.csproj", "{2FFEA1C0-C0EE-4B45-B124-443CB49CF966}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlameScript.Compiler", "FlameScript.Compiler\FlameScript.Compiler.csproj", "{F8EAA64C-4B43-4A19-BF10-F9C3A67AC6FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{B8B7A058-9AA0-44E8-B744-7C949406E7CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8B7A058-9AA0-44E8-B744-7C949406E7CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8B7A058-9AA0-44E8-B744-7C949406E7CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FFEA1C0-C0EE-4B45-B124-443CB49CF966}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FFEA1C0-C0EE-4B45-B124-443CB49CF966}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FFEA1C0-C0EE-4B45-B124-443CB49CF966}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FFEA1C0-C0EE-4B45-B124-443CB49CF966}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8EAA64C-4B43-4A19-BF10-F9C3A67AC6FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8EAA64C-4B43-4A19-BF10-F9C3A67AC6FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8EAA64C-4B43-4A19-BF10-F9C3A67AC6FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8EAA64C-4B43-4A19-BF10-F9C3A67AC6FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

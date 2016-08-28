@@ -16,6 +16,7 @@ namespace FlameScript.CLI
                 return;
             }
             var scriptPath = args[0];
+            var useCompiler = args.Length > 1 && args[1] == "--compiler";
 
             var code = File.ReadAllText(scriptPath);
 

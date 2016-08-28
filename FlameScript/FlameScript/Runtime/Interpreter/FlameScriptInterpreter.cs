@@ -87,6 +87,24 @@ namespace FlameScript.Runtime.Interpreter
                             newVar.Value = new Expando();
                         }
                     })
+                    .Case((TableMemberInvocationNode tableMemberInvocationNode) =>
+                    {
+                        var currentVariable = GetReferencedVariable(tableMemberInvocationNode.TableQualifier.Name);
+                        // Take off the last member
+                        var memberChainList = tableMemberInvocationNode.TableQualifier.MemberChain.ToList();
+                        var lastMemberInChain = memberChainList.Last();
+                        memberChainList.Remove(lastMemberInChain);
+                        dynamic intermediateMember = currentVariable.Value;
+                        //Take all except the last
+                        var remainingMembers = memberChainList;
+                        foreach (var member in remainingMembers)
+                        {
+                            intermediateMember = intermediateMember[member];
+                        }
+                        var methodToInvoke = intermediateMember[lastMemberInChain];
+                        //TODO: Invoke method with dynamic parameters
+
+                    })
                     .Case((FunctionCallExpressionNode functionCallNode) =>
                     {
                         var currentFunction = GetReferencedFunction(functionCallNode);
@@ -220,7 +238,7 @@ namespace FlameScript.Runtime.Interpreter
             else if (expressionNode is ListInitializerExpressionNode)
             {
                 var listInitializer = expressionNode as ListInitializerExpressionNode;
-                return listInitializer.Elements.Select(listElementExpression=>EvaluateExpression(listElementExpression)).ToList(); //Return as List instead of IEnumerable because it's easier to access by index
+                return listInitializer.Elements.Select(listElementExpression => EvaluateExpression(listElementExpression)).ToList(); //Return as List instead of IEnumerable because it's easier to access by index
             }
             else if (expressionNode is ListAccessorExpressionNode)
             {

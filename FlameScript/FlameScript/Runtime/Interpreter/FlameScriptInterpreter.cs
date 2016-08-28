@@ -314,7 +314,7 @@ namespace FlameScript.Runtime.Interpreter
                 case ExpressionOperationType.NotEquals:
                     return EvaluateExpression(expressionOperation.OperandA) != EvaluateExpression(expressionOperation.OperandB) ? 1 : 0;
 
-                case ExpressionOperationType.OpenBrace:
+                case ExpressionOperationType.OpenRoundBrace:
                     return null;
 
                 case ExpressionOperationType.Or:

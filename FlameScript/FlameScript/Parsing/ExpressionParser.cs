@@ -18,11 +18,12 @@ namespace FlameScript.Parsing
         private Stack<ExpressionNode> working = new Stack<ExpressionNode>();
         private Stack<ExpressionOperationType> operators = new Stack<ExpressionOperationType>();
         private Stack<int> arity = new Stack<int>();
+        private ExpressionParserGuessType guessType;
 
         //taken from http://en.wikipedia.org/wiki/Operators_in_C_and_C++
         private static readonly Dictionary<ExpressionOperationType, int> operationPrecedence = new Dictionary<ExpressionOperationType, int>()
         {
-            {ExpressionOperationType.OpenBrace, 0},
+            {ExpressionOperationType.OpenRoundBrace, 0},
             { ExpressionOperationType.FunctionCall, 2 },
             { ExpressionOperationType.Negate, 3 },
             { ExpressionOperationType.Not, 3 },
@@ -117,9 +118,24 @@ namespace FlameScript.Parsing
                             operators.Push(ExpressionOperationType.FunctionCall);
                             arity.Push(1);
                         }
+                        operators.Push(ExpressionOperationType.OpenRoundBrace);
+                    }
+                    else if (openBraceToken.BraceType == BraceType.Square)
+                    {
+                        //Something to do with lists.
+                        if (working.Count > 0 && working.Peek() is VariableReferenceExpressionNode)
+                        {
+                            //There's an identifier right before, it must be an accessor myList[0]
+                            guessType = ExpressionParserGuessType.ListAccessor;
+                        }
+                        else
+                        {
+                            //Looks like a list literal: [1, 2, 3]
+                            arity.Push(0); //This will be the list size
+                            guessType = ExpressionParserGuessType.ListInitializer;
+                        }
                     }
 
-                    operators.Push(ExpressionOperationType.OpenBrace);
                     lastTokenWasOperatorOrLeftBrace = true;
                 }
                 else if (token is CloseBraceToken)
@@ -127,12 +143,36 @@ namespace FlameScript.Parsing
                     var closeBraceToken = token as CloseBraceToken;
                     if (closeBraceToken.BraceType == BraceType.Round)
                     {
-                        while (operators.Peek() != ExpressionOperationType.OpenBrace)
+                        while (operators.Peek() != ExpressionOperationType.OpenRoundBrace)
                             PopOperator();
                         operators.Pop(); //pop the opening brace from the stack
 
                         if (operators.Count > 0 && operators.Peek() == ExpressionOperationType.FunctionCall) //function call sitting on top of the stack
                             PopOperator();
+                    }
+                    else if (closeBraceToken.BraceType == BraceType.Square)
+                    {
+                        //End of a list initializer or accessor
+
+                        if (guessType == ExpressionParserGuessType.ListInitializer)
+                        {
+                            //Try building a list and return it
+
+                            var listElements = new List<ExpressionNode>();
+                            while (working.Count > 0) //Pop all the working expressions onto the list
+                            {
+                                var listElement = working.Pop();
+                                listElements.Add(listElement);
+                            }
+                            listElements.Reverse(); //Compensate for the order of the stack
+                            working.Push(new ListInitializerExpressionNode(listElements));
+                        }
+                        else if (guessType == ExpressionParserGuessType.ListAccessor)
+                        {
+                            var accessorIndex = working.Pop(); //This is the index of the list we are accessing; for example, in myList[2], the index is 2
+                            var listVariableReference = working.Pop() as VariableReferenceExpressionNode; //This must be an identifier, currently parsed as variable reference
+                            working.Push(new ListAccessorExpressionNode(listVariableReference.VariableName, accessorIndex));
+                        }
                     }
 
                     lastTokenWasOperatorOrLeftBrace = false;
@@ -169,8 +209,16 @@ namespace FlameScript.Parsing
                 {
                     arity.Push(arity.Pop() + 1); //increase arity on top of the stack
 
-                    while (operators.Peek() != ExpressionOperationType.OpenBrace) //pop till the open brace of this function call
-                        PopOperator();
+                    if (operators.Count > 0)
+                    {
+                        //It must be a function call, because there's a function name
+                        while (operators.Peek() != ExpressionOperationType.OpenRoundBrace) //pop till the open brace of this function call
+                            PopOperator();
+                    }
+                    else
+                    {
+                        //it's basically commas with no function call, AKA elements of a list
+                    }
                 }
                 else
                     throw new ParsingException("Found unknown token while parsing expression!");

@@ -22,7 +22,8 @@
         Or,
         Negate,
         FunctionCall,
-        OpenBrace,
+        OpenRoundBrace,
+        OpenSquareBrace,
         Xor,
     }
 }

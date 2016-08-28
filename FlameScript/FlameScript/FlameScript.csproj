@@ -46,6 +46,7 @@
     <Compile Include="Lexing\Tokenizer.cs" />
     <Compile Include="Parsing\CodePosition.cs" />
     <Compile Include="Parsing\ExpressionParser.cs" />
+    <Compile Include="Parsing\ExpressionParserGuessType.cs" />
     <Compile Include="Parsing\Parser.cs" />
     <Compile Include="Parsing\ParsingException.cs" />
     <Compile Include="Parsing\UnexpectedTokenException.cs" />
@@ -65,7 +66,9 @@
     <Compile Include="Types\Ast\FunctionCallExpressionNode.cs" />
     <Compile Include="Types\Ast\FunctionDeclarationNode.cs" />
     <Compile Include="Types\Ast\IfStatementNode.cs" />
+    <Compile Include="Types\Ast\ListAccessorExpressionNode.cs" />
     <Compile Include="Types\Ast\ListDeclarationNode.cs" />
+    <Compile Include="Types\Ast\ListInitializerExpressionNode.cs" />
     <Compile Include="Types\Ast\LiteralNode.cs" />
     <Compile Include="Types\Ast\LoopStatementNode.cs" />
     <Compile Include="Types\Ast\NumberLiteralNode.cs" />

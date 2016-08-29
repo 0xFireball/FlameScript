@@ -44,6 +44,7 @@
     <Compile Include="AstEmitters\AstEmitter.cs" />
     <Compile Include="AstEmitters\NoOpEmitter.cs" />
     <Compile Include="AstEmitters\ProgramNodeEmitter.cs" />
+    <Compile Include="AstEmitters\ReturnStatementNodeEmitter.cs" />
     <Compile Include="AstEmitters\StatementSequenceEmitter.cs" />
     <Compile Include="AstEmitters\VariableDeclarationNodeEmitter.cs" />
     <Compile Include="FlameScriptCompiler.cs" />

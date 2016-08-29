@@ -28,6 +28,9 @@ namespace FlameScript.Compiler.AstEmitters
                     .Case((VariableDeclarationNode variableDeclarationNode) =>
                     {
                         emittedNode = new VariableDeclarationNodeEmitter(variableDeclarationNode);
+                    })
+                    .Case((ReturnStatementNode returnStatementNode) => {
+                        emittedNode = new ReturnStatementNodeEmitter(returnStatementNode);
                     });
                 if (astSubNode is StatementSequenceNode)
                     AddEmitterToRoot(emittedNode, astSubNode as StatementSequenceNode); //Also copy subnodes

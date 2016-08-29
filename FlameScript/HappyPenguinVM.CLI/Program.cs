@@ -1,5 +1,6 @@
-﻿using HappyPenguinVM;
+﻿using HappyPenguinVM.Encoding;
 using HappyPenguinVM.Types;
+using System.IO;
 
 namespace HappyPenguinVM.CLI
 {
@@ -18,6 +19,15 @@ namespace HappyPenguinVM.CLI
             */
             var codeEmitter = new HappyPenguinCodeEmitter();
             codeEmitter.Emit(OpCode.PushA);
+            codeEmitter.Emit(OpCode.Load, 0xFF, 0xFF);
+            codeEmitter.Emit(OpCode.Load, 0xFFFF);
+            codeEmitter.Emit(OpCode.Load, 0xAF, 0xAF);
+            codeEmitter.Emit(OpCode.Load, 0xAFAF);
+            codeEmitter.Emit(OpCode.Return);
+            var vmProgram = codeEmitter.GetEmittedCode();
+            var codeEncoder = new CodeEncoder();
+            var ofStream = File.Open("testprogram.🐧", FileMode.Create);
+            codeEncoder.EncodeCodeToStream(vmProgram, ofStream);
         }
     }
 }

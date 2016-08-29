@@ -18,6 +18,7 @@
         Load = 0x11,
         LoadA = 0x12,
         Dup = 0x13,
+        Mov = 0x14,
 
         Pop = 0x20,
         Push = 0x21,

@@ -25,14 +25,14 @@ namespace HappyPenguinVM
             _emittedCode.Add(new CodeInstruction { OpCode = code, ByteArg1 = arg1, ByteArg2 = arg2 });
         }
 
-        public void Emit(OpCode code, short arg)
+        public void Emit(OpCode code, ushort arg)
         {
-            _emittedCode.Add(new CodeInstruction { OpCode = code, ShortArg = arg });
+            _emittedCode.Add(new CodeInstruction { OpCode = code, UShortArg = arg });
         }
 
-        public CodeInstruction[] GetEmittedCode()
+        public HappyPenguinVMProgram GetEmittedCode()
         {
-            return _emittedCode.ToArray();
+            return new HappyPenguinVMProgram(_emittedCode);
         }
     }
 }

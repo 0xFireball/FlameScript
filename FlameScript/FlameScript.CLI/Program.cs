@@ -1,4 +1,5 @@
-﻿using FlameScript.Lexing;
+﻿using FlameScript.Compiler;
+using FlameScript.Lexing;
 using FlameScript.Parsing;
 using FlameScript.Runtime.Interpreter;
 using System;
@@ -28,10 +29,21 @@ namespace FlameScript.CLI
             var parser = new Parser(tokens);
             var ast = parser.ParseToAst();
 
-            //Create an interpreter and run the code
-            var interpreter = new FlameScriptInterpreter(ast);
-            interpreter.DefineFunction("print", new Action<string>(Console.WriteLine));
-            interpreter.ExecuteProgram();
+            if (!useCompiler)
+            {
+                //Use interpreter
+
+                //Create an interpreter and run the code
+                var interpreter = new FlameScriptInterpreter(ast);
+                interpreter.DefineFunction("print", new Action<string>(Console.WriteLine));
+                interpreter.ExecuteProgram();
+            }
+            else
+            {
+                //Use compiler
+                var compiler = new FlameScriptCompiler(ast);
+                compiler.CompileProgram();
+            }
         }
     }
 }

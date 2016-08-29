@@ -50,6 +50,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FlameScript.Compiler\FlameScript.Compiler.csproj">
+      <Project>{f8eaa64c-4b43-4a19-bf10-f9c3a67ac6fb}</Project>
+      <Name>FlameScript.Compiler</Name>
+    </ProjectReference>
     <ProjectReference Include="..\FlameScript\FlameScript.csproj">
       <Project>{9789ad83-72ad-4174-bb6f-dbb62ed899d3}</Project>
       <Name>FlameScript</Name>

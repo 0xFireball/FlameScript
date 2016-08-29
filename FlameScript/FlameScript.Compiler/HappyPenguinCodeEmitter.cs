@@ -6,7 +6,7 @@ namespace FlameScript.Compiler
     /// <summary>
     /// Code emitter for HappyPenguinVM machine code.
     /// </summary>
-    internal class HappyPenguinCodeEmitter
+    public class HappyPenguinCodeEmitter
     {
         private List<CodeInstruction> _emittedCode = new List<CodeInstruction>();
 

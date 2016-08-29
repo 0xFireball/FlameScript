@@ -40,15 +40,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AstEmitters\AstCompiler.cs" />
+    <Compile Include="AstEmitters\AstEmitter.cs" />
+    <Compile Include="AstEmitters\NoOpEmitter.cs" />
+    <Compile Include="AstEmitters\ProgramNodeEmitter.cs" />
+    <Compile Include="AstEmitters\StatementSequenceEmitter.cs" />
+    <Compile Include="AstEmitters\VariableDeclarationNodeEmitter.cs" />
+    <Compile Include="FlameScriptCompiler.cs" />
     <Compile Include="HappyPenguinCodeEmitter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\TypeSwitch.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FlameScript\FlameScript.csproj">
+      <Project>{9789ad83-72ad-4174-bb6f-dbb62ed899d3}</Project>
+      <Name>FlameScript</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HappyPenguinVM\HappyPenguinVM.csproj">
       <Project>{2ffea1c0-c0ee-4b45-b124-443cb49cf966}</Project>
       <Name>HappyPenguinVM</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

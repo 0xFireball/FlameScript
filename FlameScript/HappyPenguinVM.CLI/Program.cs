@@ -26,8 +26,15 @@ namespace HappyPenguinVM.CLI
             codeEmitter.Emit(OpCode.Return);
             var vmProgram = codeEmitter.GetEmittedCode();
             var codeEncoder = new CodeEncoder();
-            var ofStream = File.Open("testprogram.🐧", FileMode.Create);
-            codeEncoder.EncodeCodeToStream(vmProgram, ofStream);
+            using (var outputFileStream = File.Open("testprogram.🐧", FileMode.Create))
+            {
+                var outStream = new MemoryStream();
+                codeEncoder.EncodeCodeToStream(vmProgram, outStream);
+                outStream.Position = 0;
+                var loadedProgram = codeEncoder.ReadCodeFromStream(outStream);
+                outStream.Position = 0;
+                outStream.CopyTo(outputFileStream);
+            }
         }
     }
 }

@@ -83,6 +83,8 @@ namespace FlameScript.Runtime.Interpreter
                 throw new InterpreterRuntimeException("No entry point function could be found.");
             var entryPointFunction = entryPointFunctionCandidates[0];
 
+            //Define Builtin Things
+
             //Begin execution on global scope
             var nonFunctionDeclarationNodes = SyntaxTree.SubNodes.Except(Functions).ToList();
 

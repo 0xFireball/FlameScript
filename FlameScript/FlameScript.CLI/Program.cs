@@ -29,7 +29,7 @@ namespace FlameScript.CLI
             var parser = new Parser(tokens);
             var ast = parser.ParseToAst();
 
-            if (!useCompiler)
+            if (useCompiler)
             {
                 //Use interpreter
 

@@ -45,6 +45,9 @@ namespace FlameScript.Lexing
 
                 case '.':
                     return CharType.MemberAccess;
+
+                case '_': //Technically you can start an identifier with this
+                    return CharType.Alpha;
             }
 
             //then the categories

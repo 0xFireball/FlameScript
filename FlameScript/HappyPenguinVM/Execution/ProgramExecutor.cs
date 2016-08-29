@@ -5,6 +5,8 @@ namespace HappyPenguinVM.Execution
 {
     public class ProgramExecutor
     {
+        public int[] Memory => memory;
+
         private const int DEFAULT_MEMORY_SIZE = 1024; //1K cells, or 4KiB memory
 
         private int[] memory; //one memory cell is sizeof(int) big
@@ -42,18 +44,18 @@ namespace HappyPenguinVM.Execution
         /// </summary>
         public void InitializeMachine()
         {
+            memory = new int[_memorySize]; //Reset memory
             programCounter = 0;
             stackPointer = 0;
             heapPointer = memory.Length - 1;
             framePointer = 0;
             extremePointer = 0;
-            memory = new int[_memorySize];
         }
 
         /// <summary>
         /// Begin code execution
         /// </summary>
-        public void Start()
+        public void ExecuteCode()
         {
             InitializeMachine();
 
@@ -63,6 +65,7 @@ namespace HappyPenguinVM.Execution
             {
                 ExecuteInstruction(instruction);
                 programCounter++;
+                instruction = code[programCounter];
             }
         }
 

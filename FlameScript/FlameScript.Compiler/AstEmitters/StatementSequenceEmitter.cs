@@ -11,14 +11,13 @@ namespace FlameScript.Compiler.AstEmitters
             EmitCodeOnAllSubnodes(this, emitter);
         }
 
-        private void EmitCodeOnAllSubnodes(StatementSequenceEmitter subNode, HappyPenguinCodeEmitter emitter)
+        private void EmitCodeOnAllSubnodes(StatementSequenceEmitter node, HappyPenguinCodeEmitter emitter)
         {
-            subNode.EmitCode(emitter);
-
-            foreach (var subSubNode in subNode.SubNodes)
+            foreach (var subNode in node.SubNodes)
             {
-                if (subSubNode.SubNodes.Count > 0) //If there are subNodes, recurse again
-                    EmitCodeOnAllSubnodes(subSubNode, emitter);
+                subNode.EmitCode(emitter);
+                if (subNode.SubNodes.Count > 0) //If there are subNodes, recurse again
+                    EmitCodeOnAllSubnodes(subNode, emitter);
             }
         }
     }

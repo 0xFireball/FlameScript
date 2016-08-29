@@ -1,5 +1,5 @@
-﻿using System;
-using FlameScript.Types.Ast;
+﻿using FlameScript.Types.Ast;
+using System;
 
 namespace FlameScript.Compiler.AstEmitters
 {
@@ -14,6 +14,7 @@ namespace FlameScript.Compiler.AstEmitters
 
         public override void EmitCode(HappyPenguinCodeEmitter emitter)
         {
+            //TODO: Emit code for variable declaration
             throw new NotImplementedException();
         }
     }

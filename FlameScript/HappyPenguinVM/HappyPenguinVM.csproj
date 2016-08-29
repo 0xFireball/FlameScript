@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Encoding\CodeEncoder.cs" />
+    <Compile Include="Execution\InvalidOpCodeException.cs" />
     <Compile Include="Execution\ProgramExecutor.cs" />
     <Compile Include="HappyPenguinCodeEmitter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

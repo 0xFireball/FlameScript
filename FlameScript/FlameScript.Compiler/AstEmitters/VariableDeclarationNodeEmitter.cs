@@ -1,4 +1,5 @@
 ﻿using FlameScript.Types.Ast;
+using HappyPenguinVM;
 using System;
 
 namespace FlameScript.Compiler.AstEmitters

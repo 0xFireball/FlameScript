@@ -4,15 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F8EAA64C-4B43-4A19-BF10-F9C3A67AC6FB}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{1B975A27-4BA1-416F-ABDF-CEE817616E82}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FlameScript.Compiler</RootNamespace>
-    <AssemblyName>FlameScript.Compiler</AssemblyName>
+    <RootNamespace>HappyPenguinVM.CLI</RootNamespace>
+    <AssemblyName>HappyPenguinVM.CLI</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +24,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -40,28 +43,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AstEmitters\AstCompiler.cs" />
-    <Compile Include="AstEmitters\AstEmitter.cs" />
-    <Compile Include="AstEmitters\NoOpEmitter.cs" />
-    <Compile Include="AstEmitters\ProgramNodeEmitter.cs" />
-    <Compile Include="AstEmitters\ReturnStatementNodeEmitter.cs" />
-    <Compile Include="AstEmitters\StatementSequenceEmitter.cs" />
-    <Compile Include="AstEmitters\VariableDeclarationNodeEmitter.cs" />
-    <Compile Include="FlameScriptCompiler.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Util\TypeSwitch.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FlameScript\FlameScript.csproj">
-      <Project>{9789ad83-72ad-4174-bb6f-dbb62ed899d3}</Project>
-      <Name>FlameScript</Name>
-    </ProjectReference>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\HappyPenguinVM\HappyPenguinVM.csproj">
-      <Project>{2ffea1c0-c0ee-4b45-b124-443cb49cf966}</Project>
+      <Project>{2FFEA1C0-C0EE-4B45-B124-443CB49CF966}</Project>
       <Name>HappyPenguinVM</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

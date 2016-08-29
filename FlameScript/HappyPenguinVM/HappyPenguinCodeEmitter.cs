@@ -1,7 +1,7 @@
 ﻿using HappyPenguinVM.Types;
 using System.Collections.Generic;
 
-namespace FlameScript.Compiler
+namespace HappyPenguinVM
 {
     /// <summary>
     /// Code emitter for HappyPenguinVM machine code.

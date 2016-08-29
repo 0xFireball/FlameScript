@@ -1,4 +1,6 @@
-﻿namespace FlameScript.Compiler.AstEmitters
+﻿using HappyPenguinVM;
+
+namespace FlameScript.Compiler.AstEmitters
 {
     public class ProgramNodeEmitter : StatementSequenceEmitter
     {

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using HappyPenguinVM;
+using System.Collections.Generic;
 
 namespace FlameScript.Compiler.AstEmitters
 {

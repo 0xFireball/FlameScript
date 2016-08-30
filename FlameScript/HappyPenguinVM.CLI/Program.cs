@@ -1,7 +1,6 @@
 ﻿using HappyPenguinVM.Encoding;
 using HappyPenguinVM.Execution;
 using HappyPenguinVM.Types;
-using System;
 using System.IO;
 
 namespace HappyPenguinVM.CLI
@@ -55,10 +54,12 @@ namespace HappyPenguinVM.CLI
             executor.InitializeMachine();
             executor.ExecuteCode();
             //Dump memory
+            /*
             for (int i = 0; i < executor.Memory.Length; i++)
             {
                 Console.Write($"{executor.Memory[i]} ");
             }
+            */
         }
     }
 }

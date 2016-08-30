@@ -7,7 +7,7 @@ namespace HappyPenguinVM.Execution
     {
         public int[] Memory => memory;
 
-        private const int DEFAULT_MEMORY_SIZE = 1024; //1K cells, or 4KiB memory
+        private const int DEFAULT_MEMORY_SIZE = ushort.MaxValue; //65K cells, or 64KiB memory
 
         private int[] memory; //one memory cell is sizeof(int) big
         private int _memorySize;
@@ -253,6 +253,127 @@ namespace HappyPenguinVM.Execution
                     }
                     break;
 
+                case OpCode.PopA:
+                    registers.A = (byte)memory[stackPointer];
+                    stackPointer--;
+                    break;
+
+                case OpCode.PopB:
+                    registers.B = (byte)memory[stackPointer];
+                    stackPointer--;
+                    break;
+
+                case OpCode.PopC:
+                    registers.C = (byte)memory[stackPointer];
+                    stackPointer--;
+                    break;
+
+                case OpCode.PopD:
+                    registers.D = (byte)memory[stackPointer];
+                    stackPointer--;
+                    break;
+
+                case OpCode.Jump:
+                    programCounter = instruction.UShortArg;
+                    break;
+
+                case OpCode.JumpZ:
+                    if (registers.ZF > 0)
+                    {
+                        programCounter = instruction.UShortArg;
+                    }
+                    break;
+
+                case OpCode.JumpNotZ:
+                    if (registers.ZF == 0)
+                    {
+                        programCounter = instruction.UShortArg;
+                    }
+                    break;
+
+                case OpCode.CompareReg:
+                    var regId1 = (RegisterId)instruction.ByteArg1;
+                    var regId2 = (RegisterId)instruction.ByteArg2;
+                    ushort reg1val = 0x00;
+                    ushort reg2val = 0x00;
+
+                    switch (regId1)
+                    {
+                        case RegisterId.A:
+                            reg1val = registers.A;
+                            break;
+
+                        case RegisterId.B:
+                            reg1val = registers.B;
+                            break;
+
+                        case RegisterId.C:
+                            reg1val = registers.C;
+                            break;
+
+                        case RegisterId.D:
+                            reg1val = registers.D;
+                            break;
+
+                        case RegisterId.X:
+                            reg1val = registers.X;
+                            break;
+
+                        case RegisterId.Y:
+                            reg1val = registers.Y;
+                            break;
+
+                        case RegisterId.AB:
+                            reg1val = registers.AB;
+                            break;
+
+                        case RegisterId.CD:
+                            reg1val = registers.CD;
+                            break;
+                    }
+
+                    switch (regId2)
+                    {
+                        case RegisterId.A:
+                            reg2val = registers.A;
+                            break;
+
+                        case RegisterId.B:
+                            reg2val = registers.B;
+                            break;
+
+                        case RegisterId.C:
+                            reg2val = registers.C;
+                            break;
+
+                        case RegisterId.D:
+                            reg2val = registers.D;
+                            break;
+
+                        case RegisterId.X:
+                            reg2val = registers.X;
+                            break;
+
+                        case RegisterId.Y:
+                            reg2val = registers.Y;
+                            break;
+
+                        case RegisterId.AB:
+                            reg2val = registers.AB;
+                            break;
+
+                        case RegisterId.CD:
+                            reg2val = registers.CD;
+                            break;
+                    }
+
+                    if (reg1val == reg2val)
+                    {
+                        //Registers are equal
+                        registers.ZF = 0x1;
+                    }
+                    break;
+
                 case OpCode.Call:
                     framePointer = stackPointer; //Start of current frame
                     int tmp = programCounter;
@@ -263,7 +384,7 @@ namespace HappyPenguinVM.Execution
                 case OpCode.Return:
                     programCounter = memory[framePointer]; //Get old program counter from previous frame
                     stackPointer = framePointer - instruction.ByteArg1;
-                    framePointer = memory[framePointer - 1];
+                    framePointer = memory[framePointer - 1]; //TODO: Necessary? Review this
                     break;
 
                 case OpCode.Nop:

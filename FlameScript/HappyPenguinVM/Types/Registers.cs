@@ -28,5 +28,8 @@ namespace HappyPenguinVM.Types
 
         [FieldOffset(6)]
         public ushort Y;
+
+        [FieldOffset(8)]
+        public byte ZF;
     }
 }

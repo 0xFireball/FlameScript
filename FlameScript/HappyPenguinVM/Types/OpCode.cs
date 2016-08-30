@@ -36,14 +36,15 @@
         PopC = 0x28,
         PopD = 0x29,
 
-        Jump = 0x30,
-        JumpZ = 0x31,
-        JumpNotZ = 0x32,
+        Jump = 0x30, //Jump to a location specified by the short arg
+        JumpZ = 0x31, //Jump if the ZF is set
+        JumpNotZ = 0x32, //Jump if the ZF is not set
+        JumpFromStack = 0x33,
 
-        Compare = 0x40,
+        CompareReg = 0x40, //Compares two registers (specified with IDs through byteargs) and sets ZF if they are equal
 
-        Call = 0x80,
-        Return = 0x81,
+        Call = 0x80, //Call a section of code. Location will be read from top of the stack
+        Return = 0x8A,
 
         //9: Alloc-like stuff?
 

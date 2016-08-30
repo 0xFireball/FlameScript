@@ -48,6 +48,8 @@
     <Compile Include="Types\CodeInstruction.cs" />
     <Compile Include="Types\HappyPenguinVMProgram.cs" />
     <Compile Include="Types\OpCode.cs" />
+    <Compile Include="Types\RegisterId.cs" />
+    <Compile Include="Types\Registers.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -14,19 +14,23 @@
     /// </remarks>
     public enum OpCode : byte
     {
-        Move = 0x10,
+        MovReg = 0x10, //Move a value into a register (ex: movreg a,2). RegisterId's are in RegisterId struct
         LoadA = 0x11,
         LoadB = 0x12,
         LoadC = 0x13,
         LoadD = 0x14,
         LoadX = 0x15,
+        DupA = 0x16, //Reverse of LoadA (copy A into that memory location) [ex: dupa 0xffff]. This copies the value of A into 0xffff
+        DupB = 0x17,
+        XchangeAB = 0x18, //Exchange A and B
+        XchangeCD = 0x19, //Exchange C andD
 
-        Pop = 0x20,
-        Push = 0x21,
-        PushA = 0x22,
-        PushB = 0x23,
-        PushC = 0x24,
-        PushD = 0x25,
+        PushReg = 0x20,
+        PushA = 0x21,
+        PushB = 0x22,
+        PushC = 0x23,
+        PushD = 0x24,
+        PopReg = 0x25,
         PopA = 0x26,
         PopB = 0x27,
         PopC = 0x28,

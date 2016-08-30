@@ -20,6 +20,7 @@ namespace HappyPenguinVM.CLI
             var sourcePath = args[0];
             */
             var codeEmitter = new HappyPenguinCodeEmitter();
+
             /*
             codeEmitter.Emit(OpCode.PushA);
             codeEmitter.Emit(OpCode.Load, 0xFF, 0xFF);
@@ -28,10 +29,16 @@ namespace HappyPenguinVM.CLI
             codeEmitter.Emit(OpCode.Load, 0xAFAF);
             codeEmitter.Emit(OpCode.Return);
             */
-            //codeEmitter.Emit(OpCode.LoadA, 0x00, 0xEF);
-            codeEmitter.Emit(OpCode.Push, 0x01, 0x00);
+
+            codeEmitter.Emit(OpCode.MovReg, (byte)RegisterId.A, 0x44);
+            codeEmitter.Emit(OpCode.DupA, 0xFFAA);
+            codeEmitter.Emit(OpCode.LoadB, 0xFFAA);
+            codeEmitter.Emit(OpCode.PushA);
+            codeEmitter.Emit(OpCode.MovReg, (byte)RegisterId.A, 0x33);
+            codeEmitter.Emit(OpCode.XchangeAB);
+            codeEmitter.Emit(OpCode.PopA);
             codeEmitter.Emit(OpCode.Halt);
-            //codeEmitter.Emit(OpCode.Return);
+
             var vmProgram = codeEmitter.GetEmittedCode();
             var codeEncoder = new CodeEncoder();
             using (var outputFileStream = File.Open("testprogram.🐧", FileMode.Create))
@@ -40,7 +47,7 @@ namespace HappyPenguinVM.CLI
                 codeEncoder.EncodeCodeToStream(vmProgram, outStream);
                 outStream.Position = 0;
                 var loadedProgram = codeEncoder.ReadCodeFromStream(outStream);
-                outStream.Position = 0  ;
+                outStream.Position = 0;
                 outStream.CopyTo(outputFileStream);
             }
 

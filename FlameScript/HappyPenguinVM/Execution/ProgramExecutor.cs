@@ -47,7 +47,7 @@ namespace HappyPenguinVM.Execution
         public void InitializeMachine()
         {
             memory = new int[_memorySize]; //Reset memory
-            programCounter = 0;
+            programCounter = -1; //Code not yet loaded, so execution can't start. Before execution actually starts, this is incremented, so no worries.
             stackPointer = 0;
             //heapPointer = memory.Length - 1;
             framePointer = 0;
@@ -65,8 +65,8 @@ namespace HappyPenguinVM.Execution
 
             while (instruction.OpCode != OpCode.Halt)
             {
-                ExecuteInstruction(instruction);
                 programCounter++;
+                ExecuteInstruction(instruction);
                 instruction = code[programCounter];
             }
         }

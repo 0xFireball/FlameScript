@@ -43,6 +43,9 @@
 
         CompareReg = 0x40, //Compares two registers (specified with IDs through byteargs) and sets ZF if they are equal
 
+        //5: Arithmetic and shifting!
+        Add = 0x50, //Add registers from Id's byteArg1 and byteArg2
+
         Call = 0x80, //Call a section of code. Location will be read from top of the stack
         Return = 0x8A,
 

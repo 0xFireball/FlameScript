@@ -44,6 +44,13 @@ namespace HappyPenguinVM.CLI
             codeEmitter.Emit(OpCode.DupA, 0xFFAA); //11. Copy the data in A to 0xFFAA in memory
             codeEmitter.Emit(OpCode.LoadB, 0xFFAA); //12. Copy the data at 0xFFAA from A to B
             codeEmitter.Emit(OpCode.Jump, 0x9); //13. Jump back to line 0x9 to do comparison again
+            codeEmitter.Emit(OpCode.Nop); //14. Jump target from 10.
+            codeEmitter.Emit(OpCode.Jump, 0x14); //15. Jump to after function
+            codeEmitter.Emit(OpCode.PopA); //16. Retrieve A parameter
+            codeEmitter.Emit(OpCode.Nop); //17. Temporary placeholder
+            codeEmitter.Emit(OpCode.Nop); //18. Temporary placeholder
+            codeEmitter.Emit(OpCode.Nop); //19. Temporary placeholder
+            codeEmitter.Emit(OpCode.Nop); //20. Jump target from 14.
 
             codeEmitter.Emit(OpCode.Halt);
 

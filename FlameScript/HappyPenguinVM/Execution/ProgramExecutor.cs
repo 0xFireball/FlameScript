@@ -91,25 +91,7 @@ namespace HappyPenguinVM.Execution
                 case OpCode.MovReg:
                     var regId = (RegisterId)instruction.ByteArg1;
                     var val = instruction.ByteArg2;
-
-                    switch (regId)
-                    {
-                        case RegisterId.A:
-                            registers.A = val;
-                            break;
-
-                        case RegisterId.B:
-                            registers.B = val;
-                            break;
-
-                        case RegisterId.C:
-                            registers.C = val;
-                            break;
-
-                        case RegisterId.D:
-                            registers.D = val;
-                            break;
-                    }
+                    SetRegisterValueFromId(regId, val);
                     break;
 
                 case OpCode.LoadA:
@@ -161,42 +143,7 @@ namespace HappyPenguinVM.Execution
 
                 case OpCode.PushReg:
                     regId = (RegisterId)instruction.ByteArg1; //Should be ShortArg, but not sure about endianness
-                    ushort regVal = 0x00;
-
-                    switch (regId)
-                    {
-                        case RegisterId.A:
-                            regVal = registers.A;
-                            break;
-
-                        case RegisterId.B:
-                            regVal = registers.B;
-                            break;
-
-                        case RegisterId.C:
-                            regVal = registers.C;
-                            break;
-
-                        case RegisterId.D:
-                            regVal = registers.D;
-                            break;
-
-                        case RegisterId.X:
-                            regVal = registers.X;
-                            break;
-
-                        case RegisterId.Y:
-                            regVal = registers.Y;
-                            break;
-
-                        case RegisterId.AB:
-                            regVal = registers.AB;
-                            break;
-
-                        case RegisterId.CD:
-                            regVal = registers.CD;
-                            break;
-                    }
+                    ushort regVal = GetRegisterValueFromId(regId);
                     stackPointer++; //Pushing a new value on
                     memory[stackPointer] = regVal; //Add the value to the new point on the stack
                     break;
@@ -225,41 +172,7 @@ namespace HappyPenguinVM.Execution
                     regId = (RegisterId)instruction.ByteArg1;
                     ushort shortVal = (ushort)memory[stackPointer];
                     stackPointer--; //Shrink the stack
-
-                    switch (regId)
-                    {
-                        case RegisterId.A:
-                            registers.A = (byte)shortVal;
-                            break;
-
-                        case RegisterId.B:
-                            registers.B = (byte)shortVal;
-                            break;
-
-                        case RegisterId.C:
-                            registers.C = (byte)shortVal;
-                            break;
-
-                        case RegisterId.D:
-                            registers.D = (byte)shortVal;
-                            break;
-
-                        case RegisterId.X:
-                            registers.X = shortVal;
-                            break;
-
-                        case RegisterId.Y:
-                            registers.Y = shortVal;
-                            break;
-
-                        case RegisterId.AB:
-                            registers.AB = shortVal;
-                            break;
-
-                        case RegisterId.CD:
-                            registers.CD = shortVal;
-                            break;
-                    }
+                    SetRegisterValueFromId(regId, shortVal);
                     break;
 
                 case OpCode.PopA:
@@ -306,78 +219,8 @@ namespace HappyPenguinVM.Execution
                 case OpCode.CompareReg:
                     var regId1 = (RegisterId)instruction.ByteArg1;
                     var regId2 = (RegisterId)instruction.ByteArg2;
-                    ushort reg1val = 0x00;
-                    ushort reg2val = 0x00;
-
-                    switch (regId1)
-                    {
-                        case RegisterId.A:
-                            reg1val = registers.A;
-                            break;
-
-                        case RegisterId.B:
-                            reg1val = registers.B;
-                            break;
-
-                        case RegisterId.C:
-                            reg1val = registers.C;
-                            break;
-
-                        case RegisterId.D:
-                            reg1val = registers.D;
-                            break;
-
-                        case RegisterId.X:
-                            reg1val = registers.X;
-                            break;
-
-                        case RegisterId.Y:
-                            reg1val = registers.Y;
-                            break;
-
-                        case RegisterId.AB:
-                            reg1val = registers.AB;
-                            break;
-
-                        case RegisterId.CD:
-                            reg1val = registers.CD;
-                            break;
-                    }
-
-                    switch (regId2)
-                    {
-                        case RegisterId.A:
-                            reg2val = registers.A;
-                            break;
-
-                        case RegisterId.B:
-                            reg2val = registers.B;
-                            break;
-
-                        case RegisterId.C:
-                            reg2val = registers.C;
-                            break;
-
-                        case RegisterId.D:
-                            reg2val = registers.D;
-                            break;
-
-                        case RegisterId.X:
-                            reg2val = registers.X;
-                            break;
-
-                        case RegisterId.Y:
-                            reg2val = registers.Y;
-                            break;
-
-                        case RegisterId.AB:
-                            reg2val = registers.AB;
-                            break;
-
-                        case RegisterId.CD:
-                            reg2val = registers.CD;
-                            break;
-                    }
+                    ushort reg1val = GetRegisterValueFromId(regId1);
+                    ushort reg2val = GetRegisterValueFromId(regId2);
 
                     if (reg1val == reg2val)
                     {
@@ -411,5 +254,98 @@ namespace HappyPenguinVM.Execution
                     throw new InvalidOpCodeException("An unknown opcode was encountered: ", instruction.OpCode);
             }
         }
+
+        #region Private Utility Functions
+
+        /// <summary>
+        /// Returns a register's value from its id
+        /// </summary>
+        /// <param name="regId"></param>
+        /// <returns></returns>
+        private ushort GetRegisterValueFromId(RegisterId regId)
+        {
+            ushort regVal = 0x00;
+
+            switch (regId)
+            {
+                case RegisterId.A:
+                    regVal = registers.A;
+                    break;
+
+                case RegisterId.B:
+                    regVal = registers.B;
+                    break;
+
+                case RegisterId.C:
+                    regVal = registers.C;
+                    break;
+
+                case RegisterId.D:
+                    regVal = registers.D;
+                    break;
+
+                case RegisterId.X:
+                    regVal = registers.X;
+                    break;
+
+                case RegisterId.Y:
+                    regVal = registers.Y;
+                    break;
+
+                case RegisterId.AB:
+                    regVal = registers.AB;
+                    break;
+
+                case RegisterId.CD:
+                    regVal = registers.CD;
+                    break;
+            }
+            return regVal;
+        }
+
+        /// <summary>
+        /// Set a register's value
+        /// </summary>
+        /// <param name="regId"></param>
+        /// <param name="value"></param>
+        private void SetRegisterValueFromId(RegisterId regId, ushort value)
+        {
+            switch (regId)
+            {
+                case RegisterId.A:
+                    registers.A = (byte)value;
+                    break;
+
+                case RegisterId.B:
+                    registers.B = (byte)value;
+                    break;
+
+                case RegisterId.C:
+                    registers.C = (byte)value;
+                    break;
+
+                case RegisterId.D:
+                    registers.D = (byte)value;
+                    break;
+
+                case RegisterId.X:
+                    registers.X = value;
+                    break;
+
+                case RegisterId.Y:
+                    registers.Y = value;
+                    break;
+
+                case RegisterId.AB:
+                    registers.AB = value;
+                    break;
+
+                case RegisterId.CD:
+                    registers.CD = value;
+                    break;
+            }
+        }
+
+        #endregion Private Utility Functions
     }
 }

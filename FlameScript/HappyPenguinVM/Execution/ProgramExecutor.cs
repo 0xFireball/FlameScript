@@ -21,6 +21,8 @@ namespace HappyPenguinVM.Execution
 
         private HappyPenguinVMProgram code;
 
+        private bool skipProgramCounterUpdate; //Set to true to skip updating the program counter after executing the next instruction. This is set to false automatically after being checked.
+
         public ProgramExecutor(HappyPenguinVMProgram code) : this(code, 0)
         {
         }
@@ -47,7 +49,7 @@ namespace HappyPenguinVM.Execution
         public void InitializeMachine()
         {
             memory = new int[_memorySize]; //Reset memory
-            programCounter = -1; //Code not yet loaded, so execution can't start. Before execution actually starts, this is incremented, so no worries.
+            programCounter = 0;
             stackPointer = 0;
             //heapPointer = memory.Length - 1;
             framePointer = 0;
@@ -65,8 +67,15 @@ namespace HappyPenguinVM.Execution
 
             while (instruction.OpCode != OpCode.Halt)
             {
-                programCounter++;
                 ExecuteInstruction(instruction);
+                if (skipProgramCounterUpdate)
+                {
+                    skipProgramCounterUpdate = false;
+                }
+                else
+                {
+                    programCounter++;
+                }
                 instruction = code[programCounter];
             }
         }
@@ -275,12 +284,14 @@ namespace HappyPenguinVM.Execution
 
                 case OpCode.Jump:
                     programCounter = instruction.UShortArg;
+                    skipProgramCounterUpdate = true;
                     break;
 
                 case OpCode.JumpZ:
                     if (registers.ZF > 0)
                     {
                         programCounter = instruction.UShortArg;
+                        skipProgramCounterUpdate = true;
                     }
                     break;
 
@@ -288,6 +299,7 @@ namespace HappyPenguinVM.Execution
                     if (registers.ZF == 0)
                     {
                         programCounter = instruction.UShortArg;
+                        skipProgramCounterUpdate = true;
                     }
                     break;
 

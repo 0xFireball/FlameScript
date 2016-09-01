@@ -40,7 +40,7 @@ namespace HappyPenguinVM.CLI
             codeEmitter.Emit(OpCode.PopA); //7. Pop the stored value of A from the stack back into A
             codeEmitter.Emit(OpCode.MovReg, (byte)RegisterId.A, 0x22); //8. Set A to 0x22
             codeEmitter.Emit(OpCode.CompareReg, (byte)RegisterId.A, (byte)RegisterId.B); //9. Compare A and B
-            codeEmitter.Emit(OpCode.JumpZ, 0x1E); //10. Jump to PC=0x if the registers in the previous comparison were equal
+            codeEmitter.Emit(OpCode.JumpZ, 0xE); //10. Jump to PC=0x if the registers in the previous comparison were equal
             codeEmitter.Emit(OpCode.DupA, 0xFFAA); //11. Copy the data in A to 0xFFAA in memory
             codeEmitter.Emit(OpCode.LoadB, 0xFFAA); //12. Copy the data at 0xFFAA from A to B
             codeEmitter.Emit(OpCode.Jump, 0x9); //13. Jump back to line 0x9 to do comparison again

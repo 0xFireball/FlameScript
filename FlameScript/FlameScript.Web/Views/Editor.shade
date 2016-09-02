@@ -1,0 +1,8 @@
+﻿html
+	head
+		meta charset="utf-8"
+		title="FlameScript Web Editor"
+	body
+		#main
+			h1
+				|Hewwo, world!

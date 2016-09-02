@@ -285,6 +285,10 @@ namespace HappyPenguinVM.Execution
                     //do nothing...
                     break;
 
+                case OpCode.Fault:
+                    var faultCode = instruction.UShortArg1;
+                    break;
+
                 case OpCode.Halt:
                     //do nothing, will be handled by main excecution cycle
                     break;

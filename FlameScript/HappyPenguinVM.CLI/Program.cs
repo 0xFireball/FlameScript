@@ -51,7 +51,15 @@ namespace HappyPenguinVM.CLI
             codeEmitter.Emit(OpCode.Nop); //18. Temporary placeholder
             codeEmitter.Emit(OpCode.Nop); //19. Temporary placeholder
             codeEmitter.Emit(OpCode.Nop); //20. Jump target from 14.
-
+            codeEmitter.Emit(OpCode.MovReg, (byte)RegisterId.A, 0x4); //21. Set A to 0x4
+            codeEmitter.Emit(OpCode.ShiftLeft, (byte)RegisterId.A, 0x2); //22. Do a simple multiply by 4 with shifting
+            codeEmitter.Emit(OpCode.PushA); //23. Store A
+            codeEmitter.Emit(OpCode.PopB); //24. Restore B from stack
+            codeEmitter.Emit(OpCode.ShiftRight, (byte)RegisterId.A, 0x2); //25. Undo the multiply
+            codeEmitter.Emit(OpCode.CompareReg, (byte)RegisterId.A, (byte)RegisterId.B); //26. Compare A and B
+            codeEmitter.Emit(OpCode.JumpZ, 0x1D); //27. Jump to PC=1d if the registers in the previous comparison were equal
+            codeEmitter.Emit(OpCode.Fault, 0x1); //28. Fault with code 0x1
+            codeEmitter.Emit(OpCode.Nop); //29. Jump target
             codeEmitter.Emit(OpCode.Halt);
 
             var vmProgram = codeEmitter.GetEmittedCode();

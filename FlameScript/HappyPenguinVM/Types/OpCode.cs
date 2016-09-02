@@ -25,7 +25,6 @@
         XchangeReg = 0x18, //Exchange two registers
         XchangeAB = 0x19, //Exchange A and B
         XchangeCD = 0x1A, //Exchange C andD
-        
 
         PushReg = 0x20,
         PushA = 0x21,
@@ -58,6 +57,7 @@
         //9: Alloc-like stuff?
 
         Nop = 0x00,
+        Fault = 0xF0,
         Halt = 0xFF,
     }
 }

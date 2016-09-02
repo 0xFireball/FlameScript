@@ -22,8 +22,10 @@
         LoadX = 0x15,
         DupA = 0x16, //Reverse of LoadA (copy A into that memory location) [ex: dupa 0xffff]. This copies the value of A into 0xffff
         DupB = 0x17,
-        XchangeAB = 0x18, //Exchange A and B
-        XchangeCD = 0x19, //Exchange C andD
+        XchangeReg = 0x18, //Exchange two registers
+        XchangeAB = 0x19, //Exchange A and B
+        XchangeCD = 0x1A, //Exchange C andD
+        
 
         PushReg = 0x20,
         PushA = 0x21,
@@ -44,7 +46,9 @@
         CompareReg = 0x40, //Compares two registers (specified with IDs through byteargs) and sets ZF if they are equal
 
         //5: Arithmetic and shifting!
-        Add = 0x50, //Add registers from Id's byteArg1 and byteArg2
+
+        Add = 0x50, //Add registers from Id's byteArg1 and byteArg2. Result put in first register.
+        Subtract = 0x51, //Subtract registers from Id's byteArg1 and byteArg2
 
         Call = 0x80, //Call a section of code. Location will be read from top of the stack
         Return = 0x8A,

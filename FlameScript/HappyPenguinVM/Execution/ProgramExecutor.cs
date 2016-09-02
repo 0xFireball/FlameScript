@@ -7,7 +7,7 @@ namespace HappyPenguinVM.Execution
     {
         public int[] Memory => memory;
 
-        private const int DEFAULT_MEMORY_SIZE = ushort.MaxValue; //65K cells, or 64KiB memory
+        private const int DEFAULT_MEMORY_SIZE = ushort.MaxValue; //65K cells, or 64KiB memory. The machine can actually address much more, as it has 32-bit registers.
 
         private int[] memory; //one memory cell is sizeof(int) big
         private int _memorySize;
@@ -32,7 +32,7 @@ namespace HappyPenguinVM.Execution
             if (memorySize < 0)
                 throw new ArgumentOutOfRangeException(nameof(memorySize), "Negative memory size given");
 
-            if (memorySize > ushort.MaxValue)
+            if (memorySize > uint.MaxValue)
                 throw new ArgumentOutOfRangeException(nameof(memorySize), "Memory size to big (addresses are only 16 bits!)");
 
             if (memorySize == 0) //auto
@@ -129,23 +129,26 @@ namespace HappyPenguinVM.Execution
                     memory[targetAddress] = registers.B;
                     break;
 
+                case OpCode.XchangeReg:
+                    break;
+
                 case OpCode.XchangeAB:
-                    byte tmpByte = registers.B;
+                    var tmpRg = registers.B;
                     registers.B = registers.A;
-                    registers.A = tmpByte;
+                    registers.A = tmpRg;
                     break;
 
                 case OpCode.XchangeCD:
-                    tmpByte = registers.D;
+                    tmpRg = registers.D;
                     registers.D = registers.C;
-                    registers.D = tmpByte;
+                    registers.C = tmpRg;
                     break;
 
                 case OpCode.PushReg:
                     regId = (RegisterId)instruction.ByteArg1; //Should be ShortArg, but not sure about endianness
-                    ushort regVal = GetRegisterValueFromId(regId);
+                    uint regVal = GetRegisterValueFromId(regId);
                     stackPointer++; //Pushing a new value on
-                    memory[stackPointer] = regVal; //Add the value to the new point on the stack
+                    memory[stackPointer] = (int)regVal; //Add the value to the new point on the stack
                     break;
 
                 case OpCode.PushA:
@@ -170,7 +173,7 @@ namespace HappyPenguinVM.Execution
 
                 case OpCode.PopReg:
                     regId = (RegisterId)instruction.ByteArg1;
-                    ushort shortVal = (ushort)memory[stackPointer];
+                    uint shortVal = (uint)memory[stackPointer];
                     stackPointer--; //Shrink the stack
                     SetRegisterValueFromId(regId, shortVal);
                     break;
@@ -219,8 +222,8 @@ namespace HappyPenguinVM.Execution
                 case OpCode.CompareReg:
                     var regId1 = (RegisterId)instruction.ByteArg1;
                     var regId2 = (RegisterId)instruction.ByteArg2;
-                    ushort reg1val = GetRegisterValueFromId(regId1);
-                    ushort reg2val = GetRegisterValueFromId(regId2);
+                    uint reg1val = GetRegisterValueFromId(regId1);
+                    uint reg2val = GetRegisterValueFromId(regId2);
 
                     if (reg1val == reg2val)
                     {
@@ -229,9 +232,18 @@ namespace HappyPenguinVM.Execution
                     }
                     break;
 
+                case OpCode.Add:
+                    regId1 = (RegisterId)instruction.ByteArg1;
+                    regId2 = (RegisterId)instruction.ByteArg2;
+                    reg1val = GetRegisterValueFromId(regId1);
+                    reg2val = GetRegisterValueFromId(regId2);
+                    var outputVal = reg1val + reg2val;
+                    SetRegisterValueFromId(regId1, outputVal);
+                    break;
+
                 case OpCode.Call:
                     framePointer = stackPointer; //Start of current frame
-                    int tmp = programCounter;
+                    var tmp = programCounter;
                     programCounter = memory[stackPointer];
                     memory[stackPointer] = tmp;
                     break;
@@ -262,9 +274,9 @@ namespace HappyPenguinVM.Execution
         /// </summary>
         /// <param name="regId"></param>
         /// <returns></returns>
-        private ushort GetRegisterValueFromId(RegisterId regId)
+        private uint GetRegisterValueFromId(RegisterId regId)
         {
-            ushort regVal = 0x00;
+            uint regVal = 0x00;
 
             switch (regId)
             {
@@ -284,12 +296,12 @@ namespace HappyPenguinVM.Execution
                     regVal = registers.D;
                     break;
 
-                case RegisterId.X:
-                    regVal = registers.X;
+                case RegisterId.R:
+                    regVal = registers.R;
                     break;
 
-                case RegisterId.Y:
-                    regVal = registers.Y;
+                case RegisterId.S:
+                    regVal = registers.S;
                     break;
 
                 case RegisterId.AB:
@@ -308,7 +320,7 @@ namespace HappyPenguinVM.Execution
         /// </summary>
         /// <param name="regId"></param>
         /// <param name="value"></param>
-        private void SetRegisterValueFromId(RegisterId regId, ushort value)
+        private void SetRegisterValueFromId(RegisterId regId, uint value)
         {
             switch (regId)
             {
@@ -328,6 +340,42 @@ namespace HappyPenguinVM.Execution
                     registers.D = (byte)value;
                     break;
 
+                case RegisterId.E:
+                    registers.E = (byte)value;
+                    break;
+
+                case RegisterId.F:
+                    registers.F = (byte)value;
+                    break;
+
+                case RegisterId.G:
+                    registers.G = (byte)value;
+                    break;
+
+                case RegisterId.H:
+                    registers.H = (byte)value;
+                    break;
+
+                case RegisterId.R:
+                    registers.R = (ushort)value;
+                    break;
+
+                case RegisterId.S:
+                    registers.S = (ushort)value;
+                    break;
+
+                case RegisterId.T:
+                    registers.T = (ushort)value;
+                    break;
+
+                case RegisterId.U:
+                    registers.U = (ushort)value;
+                    break;
+
+                case RegisterId.W:
+                    registers.W = value;
+                    break;
+
                 case RegisterId.X:
                     registers.X = value;
                     break;
@@ -336,12 +384,40 @@ namespace HappyPenguinVM.Execution
                     registers.Y = value;
                     break;
 
+                case RegisterId.Z:
+                    registers.Z = value;
+                    break;
+
                 case RegisterId.AB:
-                    registers.AB = value;
+                    registers.AB = (ushort)value;
                     break;
 
                 case RegisterId.CD:
-                    registers.CD = value;
+                    registers.CD = (ushort)value;
+                    break;
+
+                case RegisterId.EF:
+                    registers.EF = (ushort)value;
+                    break;
+
+                case RegisterId.GH:
+                    registers.GH = (ushort)value;
+                    break;
+
+                case RegisterId.ABCD:
+                    registers.ABCD = value;
+                    break;
+
+                case RegisterId.EFGH:
+                    registers.ABCD = value;
+                    break;
+
+                case RegisterId.RS:
+                    registers.ABCD = value;
+                    break;
+
+                case RegisterId.TU:
+                    registers.ABCD = value;
                     break;
             }
         }

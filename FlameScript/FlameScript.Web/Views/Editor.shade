@@ -31,10 +31,22 @@
 								i.material-icons
 									| code
 								| By 0xFireball
+
+		-// Content
+
+		section.container#main-content
+			.container
+				.row
+					.col-sm-12.col-md-12.col-lg-12#editor-column
+						h1
+							| FlameScript Web Editor
+						.editor-area
+							textarea#cm-editor
+                    
 	
 	script src="assets/js/jquery.min.js"
     script src="assets/js/bootstrap.min.js"
     script src="assets/js/material.min.js"
     script src="assets/js/ripples.min.js"
     script src="assets/js/filesaver.min.js"
-    script src="app/flamescriptweb.js"
+    script src="static/app/flamescriptweb.js"

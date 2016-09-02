@@ -10,5 +10,8 @@ public class StaticFileBootstrapper : DefaultNancyBootstrapper
         conventions.StaticContentsConventions.Add(
             StaticContentConventionBuilder.AddDirectory("assets", "assets/")
         );
+        conventions.StaticContentsConventions.Add(
+            StaticContentConventionBuilder.AddDirectory("static", "static/")
+        );
     }
 }

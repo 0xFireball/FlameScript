@@ -222,10 +222,10 @@ namespace HappyPenguinVM.Execution
                 case OpCode.CompareReg:
                     var regId1 = (RegisterId)instruction.ByteArg1;
                     var regId2 = (RegisterId)instruction.ByteArg2;
-                    uint reg1val = GetRegisterValueFromId(regId1);
-                    uint reg2val = GetRegisterValueFromId(regId2);
+                    uint regVal1 = GetRegisterValueFromId(regId1);
+                    uint regVal2 = GetRegisterValueFromId(regId2);
 
-                    if (reg1val == reg2val)
+                    if (regVal1 == regVal2)
                     {
                         //Registers are equal
                         registers.ZF = 0x1;
@@ -235,9 +235,36 @@ namespace HappyPenguinVM.Execution
                 case OpCode.Add:
                     regId1 = (RegisterId)instruction.ByteArg1;
                     regId2 = (RegisterId)instruction.ByteArg2;
-                    reg1val = GetRegisterValueFromId(regId1);
-                    reg2val = GetRegisterValueFromId(regId2);
-                    var outputVal = reg1val + reg2val;
+                    regVal1 = GetRegisterValueFromId(regId1);
+                    regVal2 = GetRegisterValueFromId(regId2);
+                    var outputVal = regVal1 + regVal2;
+                    SetRegisterValueFromId(regId1, outputVal);
+                    break;
+
+                case OpCode.Subtract:
+                    regId1 = (RegisterId)instruction.ByteArg1;
+                    regId2 = (RegisterId)instruction.ByteArg2;
+                    regVal1 = GetRegisterValueFromId(regId1);
+                    regVal2 = GetRegisterValueFromId(regId2);
+                    outputVal = regVal1 - regVal2;
+                    SetRegisterValueFromId(regId1, outputVal);
+                    break;
+
+                case OpCode.ShiftRight:
+                    regId1 = (RegisterId)instruction.ByteArg1;
+                    regId2 = (RegisterId)instruction.ByteArg2;
+                    regVal1 = GetRegisterValueFromId(regId1);
+                    regVal2 = GetRegisterValueFromId(regId2);
+                    outputVal = (uint)((int)regVal1 >> (int)regVal2);
+                    SetRegisterValueFromId(regId1, outputVal);
+                    break;
+
+                case OpCode.ShiftLeft:
+                    regId1 = (RegisterId)instruction.ByteArg1;
+                    regId2 = (RegisterId)instruction.ByteArg2;
+                    regVal1 = GetRegisterValueFromId(regId1);
+                    regVal2 = GetRegisterValueFromId(regId2);
+                    outputVal = (uint)((int)regVal1 << (int)regVal2);
                     SetRegisterValueFromId(regId1, outputVal);
                     break;
 

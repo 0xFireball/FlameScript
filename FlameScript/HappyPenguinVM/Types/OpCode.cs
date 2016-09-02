@@ -49,6 +49,8 @@
 
         Add = 0x50, //Add registers from Id's byteArg1 and byteArg2. Result put in first register.
         Subtract = 0x51, //Subtract registers from Id's byteArg1 and byteArg2
+        ShiftRight = 0x52,
+        ShiftLeft = 0x53,
 
         Call = 0x80, //Call a section of code. Location will be read from top of the stack
         Return = 0x8A,

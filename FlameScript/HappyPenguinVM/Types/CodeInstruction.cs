@@ -29,5 +29,8 @@ namespace HappyPenguinVM.Types
 
         [FieldOffset(1)] //overlay over ByteArg1/2
         public ushort UShortArg;
+
+        [FieldOffset(1)]
+        public uint UIntArg;
     }
 }

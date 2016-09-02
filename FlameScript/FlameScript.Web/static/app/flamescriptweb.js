@@ -27,3 +27,14 @@ cmEditor.on("change", function (cm, change) {
     //console.log(change);
     localStorage.setItem(autosaveKey, autosavedSource);
 });
+
+$("#navbar-compile").click(() => {
+    let editorSource = cmEditor.getValue();
+    let postData = {
+        code: editorSource,
+    };
+    $.post("/processCode", postData, (data, status, xhr) => {
+        //Data is the output from processCode
+
+    });
+});

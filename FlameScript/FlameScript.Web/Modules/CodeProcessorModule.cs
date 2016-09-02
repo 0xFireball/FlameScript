@@ -1,5 +1,7 @@
-﻿using Nancy;
-using System.IO;
+﻿using FlameScript.Lexing;
+using FlameScript.Parsing;
+using Nancy;
+using Newtonsoft.Json;
 
 namespace FlameScript.Web.Modules
 {
@@ -13,10 +15,22 @@ namespace FlameScript.Web.Modules
             });
             Post("/processCode", (parameters) =>
             {
+                /*
                 var postDataStream = Request.Body;
                 var postDataReader = new StreamReader(postDataStream);
                 var rawPostData = postDataReader.ReadToEnd();
-                return "Hello, World! 2.0";
+                */
+
+                var code = Request.Form["code"];
+                //Tokenize the code
+                var tokenizer = new Tokenizer(code);
+                var tokens = tokenizer.Tokenize();
+
+                //Parse the tokenized code, and create an AST
+                var parser = new Parser(tokens);
+                var ast = parser.ParseToAst();
+                var astJson = JsonConvert.SerializeObject(ast);
+                return astJson;
             });
         }
     }

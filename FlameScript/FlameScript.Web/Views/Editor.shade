@@ -42,6 +42,11 @@
 								i.material-icons
 									| edit
 								| Edit
+						li
+							a href="javascript:void(0)" id="navbar-compile"
+								i.material-icons
+									| build
+								| Build Code
 					ul.nav.navbar-nav.navbar-right
 						li
 							a target="_blank" href="https://github.com/0xFireball"

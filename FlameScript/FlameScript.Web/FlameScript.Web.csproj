@@ -83,7 +83,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\FlameScript\FlameScript.csproj">
+      <Project>{9789AD83-72AD-4174-BB6F-DBB62ED899D3}</Project>
+      <Name>FlameScript</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <Content Include="static\app\flamescriptweb.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

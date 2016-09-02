@@ -1,8 +1,21 @@
 ﻿html
 	head
-		meta charset="utf-8"
 		title="FlameScript Web Editor"
+		link href="assets/css/bootstrap.min.css" rel="stylesheet"
+		link href="assets/css/bootstrap-material-design.min.css" rel="stylesheet"
+		link href="assets/css/ripples.min.css" rel="stylesheet"
+		link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet"
+		link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"
 	body
 		#main
 			h1
-				|Hewwo, world!
+				| Hewwo, world!
+	
+	script src="assets/js/jquery.min.js"
+    script src="assets/js/bootstrap.min.js"
+    script src="assets/js/material.min.js"
+    script src="assets/js/ripples.min.js"
+    script src="assets/js/jquery-csv.min.js"
+    script src="assets/js/filesaver.min.js"
+    script src="assets/js/moment.min.js"
+    script src="app/flamescriptweb.js"

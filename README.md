@@ -1,5 +1,5 @@
 
-# FlameScript
+# FlameScript + HappyPenguinVM
 
 FlameScript is a highly experimental programming language.
 The lexer and parser are written completely in C#.
@@ -9,7 +9,10 @@ As of right now, the language itself does not support invoking methods on dynami
 but when that feature is implemented, you will be able to share object instances between .NET and FlameScript.
 Eventually, you will be to compile to a variety of targets (for example, .NET IL bytecode, JavaScript, or NekoVM).
 
-## Features
+HappyPenguinVM is an **even more highly experimental** bytecode VM. It runs its own assembly-like list of instructions, but has
+quite a few special quirks. See the [HappyPenguin Readme](HPReadme.md) for more information.
+
+## FlameScript Features
 
 ### Implemented
 

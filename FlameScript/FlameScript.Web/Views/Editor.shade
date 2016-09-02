@@ -7,15 +7,34 @@
 		link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet"
 		link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"
 	body
-		#main
-			h1
-				| Hewwo, world!
+
+		-// Navbar
+		.navbar.navbar-default
+			.container-fluid
+				.navbar-header
+					button.navbar-toggle type="button" data-toggle="collapse" data-target=".navbar-responsive-collapse"
+					  span.icon-bar
+					  span.icon-bar
+					  span.icon-bar
+					a.navbar-brand href="#"
+						| FlameScript Web Editor
+				.navbar-collapse.collapse.navbar-responsive-collapse
+					ul.nav.navbar-nav#navbar-container
+						li.active
+							a href="javascript:void(0)"
+								i.material-icons
+									| edit
+								| Edit
+					ul.nav.navbar-nav.navbar-right
+						li
+							a target="_blank" href="https://github.com/0xFireball"
+								i.material-icons
+									| code
+								| By 0xFireball
 	
 	script src="assets/js/jquery.min.js"
     script src="assets/js/bootstrap.min.js"
     script src="assets/js/material.min.js"
     script src="assets/js/ripples.min.js"
-    script src="assets/js/jquery-csv.min.js"
     script src="assets/js/filesaver.min.js"
-    script src="assets/js/moment.min.js"
     script src="app/flamescriptweb.js"

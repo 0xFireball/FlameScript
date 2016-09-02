@@ -60,7 +60,7 @@ namespace HappyPenguinVM.CLI
             codeEmitter.Emit(OpCode.JumpZ, 0x1D); //27. Jump to PC=1d if the registers in the previous comparison were equal
             codeEmitter.Emit(OpCode.Fault, 0x1); //28. Fault with code 0x1
             codeEmitter.Emit(OpCode.Nop); //29. Jump target
-            codeEmitter.Emit(OpCode.Halt);
+            codeEmitter.Emit(OpCode.Halt); //End of program. Halt.
 
             var vmProgram = codeEmitter.GetEmittedCode();
             var codeEncoder = new CodeEncoder();

@@ -16,6 +16,7 @@ namespace FlameScript.Compiler.AstEmitters
         {
             var rootEmitter = new ProgramNodeEmitter();
             AddEmitterToRoot(rootEmitter, _programAst);
+
             return rootEmitter;
         }
 
@@ -29,7 +30,8 @@ namespace FlameScript.Compiler.AstEmitters
                     {
                         emittedNode = new VariableDeclarationNodeEmitter(variableDeclarationNode);
                     })
-                    .Case((ReturnStatementNode returnStatementNode) => {
+                    .Case((ReturnStatementNode returnStatementNode) =>
+                    {
                         emittedNode = new ReturnStatementNodeEmitter(returnStatementNode);
                     });
                 if (astSubNode is StatementSequenceNode)

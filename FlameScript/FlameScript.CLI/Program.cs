@@ -42,7 +42,7 @@ namespace FlameScript.CLI
             {
                 //Use compiler
                 var compiler = new FlameScriptCompiler(ast);
-                compiler.CompileProgram();
+                var compiledProgramBytes = compiler.CompileProgram();
             }
         }
     }

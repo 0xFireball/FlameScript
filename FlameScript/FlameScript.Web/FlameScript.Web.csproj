@@ -84,6 +84,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FlameScript.Compiler\FlameScript.Compiler.csproj">
+      <Project>{F8EAA64C-4B43-4A19-BF10-F9C3A67AC6FB}</Project>
+      <Name>FlameScript.Compiler</Name>
+    </ProjectReference>
     <ProjectReference Include="..\FlameScript\FlameScript.csproj">
       <Project>{9789AD83-72AD-4174-BB6F-DBB62ED899D3}</Project>
       <Name>FlameScript</Name>

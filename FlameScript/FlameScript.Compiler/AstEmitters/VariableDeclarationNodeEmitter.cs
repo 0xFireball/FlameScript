@@ -16,7 +16,7 @@ namespace FlameScript.Compiler.AstEmitters
         public override void EmitCode(HappyPenguinCodeEmitter emitter)
         {
             //TODO: Emit code for variable declaration
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

@@ -1,11 +1,28 @@
 ﻿html
 	head
 		title="FlameScript Web Editor"
+		-//Bootstrap & Material Design
 		link href="assets/css/bootstrap.min.css" rel="stylesheet"
 		link href="assets/css/bootstrap-material-design.min.css" rel="stylesheet"
 		link href="assets/css/ripples.min.css" rel="stylesheet"
 		link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet"
 		link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"
+
+		-//CodeMirror
+
+		link rel="stylesheet" href="assets/codemirror/lib/codemirror.css"
+		link rel="stylesheet" href="assets/css/simplescrollbars.custom.css"
+		link rel="stylesheet" href="assets/codemirror/theme/3024-day.css"
+
+		script src="assets/codemirror/lib/codemirror.js"
+		script src="assets/codemirror/mode/markdown/markdown.js"
+		script src="assets/codemirror/addon/search/search.js"
+		script src="assets/codemirror/addon/search/searchcursor.js"
+		script src="assets/codemirror/addon/search/jump-to-line.js"
+		script src="assets/codemirror/addon/dialog/dialog.js"
+		script src="assets/codemirror/addon/edit/matchbrackets.js"
+		script src="assets/codemirror/addon/wrap/hardwrap.js"
+		script src="assets/codemirror/addon/scroll/simplescrollbars.js"
 	body
 
 		-// Navbar

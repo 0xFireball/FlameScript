@@ -95,37 +95,37 @@ namespace HappyPenguinVM.Execution
                     break;
 
                 case OpCode.LoadA:
-                    ushort sourceAddress = instruction.UShortArg;
+                    ushort sourceAddress = instruction.UShortArg1;
                     registers.A = (byte)memory[sourceAddress];
                     break;
 
                 case OpCode.LoadB:
-                    sourceAddress = instruction.UShortArg;
+                    sourceAddress = instruction.UShortArg1;
                     registers.B = (byte)memory[sourceAddress];
                     break;
 
                 case OpCode.LoadC:
-                    sourceAddress = instruction.UShortArg;
+                    sourceAddress = instruction.UShortArg1;
                     registers.C = (byte)memory[sourceAddress];
                     break;
 
                 case OpCode.LoadD:
-                    sourceAddress = instruction.UShortArg;
+                    sourceAddress = instruction.UShortArg1;
                     registers.D = (byte)memory[sourceAddress];
                     break;
 
                 case OpCode.LoadX:
-                    sourceAddress = instruction.UShortArg;
+                    sourceAddress = instruction.UShortArg1;
                     registers.X = (ushort)memory[sourceAddress];
                     break;
 
                 case OpCode.DupA:
-                    ushort targetAddress = instruction.UShortArg;
+                    ushort targetAddress = instruction.UShortArg1;
                     memory[targetAddress] = registers.A;
                     break;
 
                 case OpCode.DupB:
-                    targetAddress = instruction.UShortArg;
+                    targetAddress = instruction.UShortArg1;
                     memory[targetAddress] = registers.B;
                     break;
 
@@ -199,14 +199,14 @@ namespace HappyPenguinVM.Execution
                     break;
 
                 case OpCode.Jump:
-                    programCounter = instruction.UShortArg;
+                    programCounter = instruction.UShortArg1;
                     skipProgramCounterUpdate = true;
                     break;
 
                 case OpCode.JumpZ:
                     if (registers.ZF > 0)
                     {
-                        programCounter = instruction.UShortArg;
+                        programCounter = instruction.UShortArg1;
                         skipProgramCounterUpdate = true;
                     }
                     break;
@@ -214,7 +214,7 @@ namespace HappyPenguinVM.Execution
                 case OpCode.JumpNotZ:
                     if (registers.ZF == 0)
                     {
-                        programCounter = instruction.UShortArg;
+                        programCounter = instruction.UShortArg1;
                         skipProgramCounterUpdate = true;
                     }
                     break;

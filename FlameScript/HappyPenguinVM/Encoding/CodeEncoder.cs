@@ -19,9 +19,9 @@ namespace HappyPenguinVM.Encoding
             outputStreamWriter.Write(MagicHeader);
             foreach (var instruction in programCode)
             {
-                outputStreamWriter.Write((int)instruction.OpCode);
-                outputStreamWriter.Write(instruction.ByteArg1);
-                outputStreamWriter.Write(instruction.ByteArg2);
+                outputStreamWriter.Write((byte)instruction.OpCode);
+                outputStreamWriter.Write(instruction.UIntArg1);
+                outputStreamWriter.Write(instruction.UIntArg2);
             }
             outputStreamWriter.Flush();
         }
@@ -41,14 +41,14 @@ namespace HappyPenguinVM.Encoding
             }
             //Header matches, now read instructions into code
             var readProgram = new HappyPenguinVMProgram();
-            byte[] instructionReaderBuffer = new byte[sizeof(int) + sizeof(short)]; //Size of the instruction (int + short)
+            byte[] instructionReaderBuffer = new byte[sizeof(byte) + sizeof(int) * 2]; //Size of the instruction (byte + int + int)
             while (inputStreamReader.BaseStream.Position < inputStreamReader.BaseStream.Length)
             {
                 inputStreamReader.Read(instructionReaderBuffer, 0, instructionReaderBuffer.Length);
-                int opCodeInt = BitConverter.ToInt32(instructionReaderBuffer, 0);
-                byte arg1 = instructionReaderBuffer[4]; //Get the fifth byte
-                byte arg2 = instructionReaderBuffer[5]; //Get the sixth byte
-                readProgram.Add(new CodeInstruction { OpCode = (OpCode)opCodeInt, ByteArg1 = arg1, ByteArg2 = arg2 });
+                byte opCodeByte = instructionReaderBuffer[0];
+                uint uiArg1 = (uint)BitConverter.ToInt32(instructionReaderBuffer, 1);
+                uint uiArg2 = (uint)BitConverter.ToInt32(instructionReaderBuffer, 5);
+                readProgram.Add(new CodeInstruction { OpCode = (OpCode)uiArg1, UIntArg1 = uiArg1, UIntArg2 = uiArg2 });
             }
 
             return readProgram;

@@ -37,7 +37,7 @@ namespace HappyPenguinVM.Encoding
             var headerMatch = MagicHeader.SequenceEqual(headerBuffer);
             if (!headerMatch)
             {
-                throw new InvalidDataException("The data does not contain a valid HappyPenguinVM program!");
+                throw new InvalidProgramException("The data does not contain a valid HappyPenguinVM program!");
             }
             //Header matches, now read instructions into code
             var readProgram = new HappyPenguinVMProgram();

@@ -272,11 +272,13 @@ namespace HappyPenguinVM.Execution
                     framePointer = stackPointer; //Start of current frame
                     var tmp = programCounter;
                     programCounter = memory[stackPointer];
+                    skipProgramCounterUpdate = true;
                     memory[stackPointer] = tmp;
                     break;
 
                 case OpCode.Return:
                     programCounter = memory[framePointer]; //Get old program counter from previous frame
+                    skipProgramCounterUpdate = false; //We actually want to go to the line after the call instruction
                     stackPointer = framePointer - instruction.ByteArg1;
                     framePointer = memory[framePointer - 1]; //TODO: Necessary? Review this
                     break;
